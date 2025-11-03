@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Clock } from 'lucide-react';
-import { CartItem, PaymentMethod, ServiceType } from '../types';
-import { usePaymentMethods } from '../hooks/usePaymentMethods';
+import { CartItem, ServiceType } from '../types';
 
 interface CheckoutProps {
   cartItems: CartItem[];
@@ -10,7 +9,6 @@ interface CheckoutProps {
 }
 
 const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) => {
-  const { paymentMethods } = usePaymentMethods();
   const [step, setStep] = useState<'details' | 'payment'>('details');
   const [customerName, setCustomerName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
@@ -21,21 +19,11 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   const [customTime, setCustomTime] = useState('');
   // Dine-in specific state
   const [partySize, setPartySize] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('gcash');
   const [notes, setNotes] = useState('');
 
   React.useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step]);
-
-  // Set default payment method when payment methods are loaded
-  React.useEffect(() => {
-    if (paymentMethods.length > 0 && !paymentMethod) {
-      setPaymentMethod(paymentMethods[0].id as PaymentMethod);
-    }
-  }, [paymentMethods, paymentMethod]);
-
-  const selectedPaymentMethod = paymentMethods.find(method => method.id === paymentMethod);
 
   const handleProceedToPayment = () => {
     setStep('payment');
@@ -80,7 +68,7 @@ ${cartItems.map(item => {
 
 💰 TOTAL: ₱${totalPrice}
 
-💳 Payment: ${selectedPaymentMethod?.name || paymentMethod}
+💳 Payment: GCash
 📸 Payment Screenshot: Please attach your payment receipt screenshot
 
 ${notes ? `📝 Notes: ${notes}` : ''}
@@ -343,59 +331,71 @@ Please confirm this order to proceed. Thank you for choosing Chick Central! 🍗
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Payment Method Selection */}
+        {/* GCash Payment Only */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-2xl font-noto font-medium text-black mb-6">Choose Payment Method</h2>
+          <h2 className="text-2xl font-noto font-medium text-black mb-6">💳 GCash Payment</h2>
           
-          <div className="grid grid-cols-1 gap-4 mb-6">
-            {paymentMethods.map((method) => (
-              <button
-                key={method.id}
-                type="button"
-                onClick={() => setPaymentMethod(method.id as PaymentMethod)}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 flex items-center space-x-3 ${
-                  paymentMethod === method.id
-                    ? 'border-red-600 bg-red-600 text-white'
-                    : 'border-red-300 bg-white text-gray-700 hover:border-red-400'
-                }`}
-              >
-                <span className="text-2xl">💳</span>
-                <span className="font-medium">{method.name}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Payment Details with QR Code */}
-          {selectedPaymentMethod && (
-            <div className="bg-chick-beige rounded-lg p-6 mb-6">
-              <h3 className="font-medium text-black mb-4">Payment Details</h3>
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div className="flex-1">
-                  <p className="text-sm text-gray-600 mb-1">{selectedPaymentMethod.name}</p>
-                  <p className="font-mono text-black font-medium">{selectedPaymentMethod.account_number}</p>
-                  <p className="text-sm text-gray-600 mb-3">Account Name: {selectedPaymentMethod.account_name}</p>
-                  <p className="text-xl font-semibold text-black">Amount: ₱{totalPrice}</p>
-                </div>
-                <div className="flex-shrink-0">
-                  <img 
-                    src={selectedPaymentMethod.qr_code_url} 
-                    alt={`${selectedPaymentMethod.name} QR Code`}
-                    className="w-32 h-32 rounded-lg border-2 border-red-300 shadow-sm"
-                    onError={(e) => {
-                      e.currentTarget.src = 'https://images.pexels.com/photos/8867482/pexels-photo-8867482.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop';
-                    }}
-                  />
-                  <p className="text-xs text-gray-500 text-center mt-2">Scan to pay</p>
-                </div>
+          {/* GCash Payment Details with QR Code */}
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 mb-6 border-2 border-blue-300">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-xl">G</span>
+              </div>
+              <h3 className="font-bold text-blue-900 text-lg">GCash Payment</h3>
+            </div>
+            
+            <div className="bg-white rounded-lg p-4 mb-4">
+              <p className="text-xl font-bold text-black mb-4 text-center">Amount to Pay: ₱{totalPrice}</p>
+              
+              {/* QR Code - Large and Centered */}
+              <div className="flex justify-center mb-4">
+                <img 
+                  src="/images/payment-qr/gcash-qr-code.jpg" 
+                  alt="GCash QR Code"
+                  className="w-64 h-64 rounded-lg border-4 border-blue-400 shadow-xl"
+                  onError={(e) => {
+                    e.currentTarget.src = '/images/payment-qr/gcash-qr-code.png';
+                  }}
+                />
+              </div>
+              
+              <div className="text-center">
+                <p className="text-sm text-blue-800 font-semibold mb-2">📱 Scan QR Code to Pay via GCash</p>
+                <p className="text-xs text-gray-600">or use the details below</p>
               </div>
             </div>
-          )}
+            
+            {/* Account Details */}
+            <div className="bg-white rounded-lg p-4 space-y-2">
+              <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                <span className="text-sm text-gray-600">Payment Method:</span>
+                <span className="font-semibold text-blue-900">GCash / InstaPay</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                <span className="text-sm text-gray-600">Mobile Number:</span>
+                <span className="font-mono font-semibold text-gray-900">+63 905 293 ****</span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <span className="text-sm text-gray-600">Account Name:</span>
+                <span className="font-semibold text-gray-900">FR**Z EM**N T.</span>
+              </div>
+            </div>
+          </div>
 
-          {/* Reference Number */}
-          <div className="bg-chick-cream border-2 border-chick-yellow rounded-lg p-4">
-            <h4 className="font-medium text-black mb-2">📸 Payment Proof Required</h4>
-            <p className="text-sm text-gray-700">
-              After making your payment, please take a screenshot of your payment receipt and attach it when you send your order via Messenger. This helps us verify and process your order quickly.
+          {/* Payment Instructions */}
+          <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
+            <h4 className="font-bold text-yellow-900 mb-3 flex items-center">
+              <span className="text-xl mr-2">📸</span>
+              Payment Proof Required
+            </h4>
+            <ol className="text-sm text-gray-700 space-y-2 list-decimal list-inside">
+              <li>Scan the QR code using your GCash app</li>
+              <li>Complete the payment of <span className="font-bold">₱{totalPrice}</span></li>
+              <li>Take a screenshot of your payment receipt</li>
+              <li>Attach the screenshot when sending your order via Messenger</li>
+            </ol>
+            <p className="text-xs text-gray-600 mt-3 italic">
+              💡 This helps us verify and process your order quickly!
             </p>
           </div>
         </div>

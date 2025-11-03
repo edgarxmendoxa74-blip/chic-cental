@@ -1,0 +1,25 @@
+📱 SAVE YOUR GCASH QR CODE HERE
+
+==================================================
+
+STEP 1: Save Your GCash QR Code Image
+--------------------------------------
+1. Find the GCash QR code image you provided (the blue one with InstaPay)
+2. Save it or copy it
+3. Name it: gcash-qr-code.jpg (or .png)
+4. Place it in THIS folder: public/images/payment-qr/
+
+STEP 2: The QR Code Will Appear
+--------------------------------
+✅ Location: Payment details section during checkout
+✅ Displays automatically when customer reaches payment step
+✅ Shows your account details and QR code for scanning
+
+File Details:
+-------------
+- File name: gcash-qr-code.jpg (or gcash-qr-code.png)
+- This folder: public/images/payment-qr/
+- The website will automatically display it!
+
+That's it! Save your GCash QR here and customers can scan to pay! 💳
+
