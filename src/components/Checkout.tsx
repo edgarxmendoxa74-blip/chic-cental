@@ -78,8 +78,16 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
     const encodedMessage = encodeURIComponent(orderDetails);
     const messengerUrl = `https://m.me/822055400987696?text=${encodedMessage}`;
     
-    window.open(messengerUrl, '_blank');
+    // Detect if mobile device for better compatibility
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
+    if (isMobile) {
+      // On mobile, use location.href for better compatibility
+      window.location.href = messengerUrl;
+    } else {
+      // On desktop, open in new tab
+      window.open(messengerUrl, '_blank');
+    }
   };
 
   const isDetailsValid = customerName && contactNumber && 
