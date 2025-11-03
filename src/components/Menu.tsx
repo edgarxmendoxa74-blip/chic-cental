@@ -92,13 +92,24 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
         onCategoryClick={handleCategoryClick}
       />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Banner Section */}
       <div className="text-center mb-12 bg-chick-gradient rounded-2xl shadow-2xl py-8 px-6">
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
           🍗 Chick Central
         </h2>
-        <p className="text-xl md:text-2xl text-white font-semibold drop-shadow-md">
-          Flavored wings that hit different! 🔥
+        <p className="text-xl md:text-2xl text-white font-semibold drop-shadow-md mb-8">
+          Flavored wings that hits different! 🔥
         </p>
+        
+        {/* Flavors Poster */}
+        <div className="mt-6 flex justify-center">
+          <img 
+            src="/images/posters/chick-central-flavors.jpg" 
+            alt="Chick Central Flavors - 8 Delicious Varieties"
+            className="max-w-full h-auto rounded-xl shadow-2xl border-4 border-white"
+            style={{ maxHeight: '600px' }}
+          />
+        </div>
       </div>
 
       {categories.map((category) => {
