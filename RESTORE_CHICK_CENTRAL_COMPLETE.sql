@@ -1,15 +1,18 @@
 -- ========================================
--- 🐔 CHICK CENTRAL - COMPLETE MENU
+-- 🐔 CHICK CENTRAL - COMPLETE RESTORATION
 -- ========================================
--- Based on real menu images:
--- 1. Fun Bites (Yellow)
--- 2. Wings - Jumbo (Yellow) 
--- 3. Wings - Junior (Red) [NEW!]
--- 4. Drumstick (Red)
+-- This script restores EVERYTHING:
+-- ✅ Site Settings
+-- ✅ All Categories (4 total)
+-- ✅ All Menu Items (20 total including 30pcs)
+-- ✅ All Flavors (8 flavors each)
+-- ✅ All Add-ons
+-- ========================================
+-- Run this ONCE in Supabase SQL Editor
 -- ========================================
 
 -- ========================================
--- STEP 1: DELETE EVERYTHING
+-- STEP 1: DELETE EVERYTHING (Clean Slate)
 -- ========================================
 
 DELETE FROM menu_items;
@@ -152,6 +155,20 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JBA12 - 12 pcs Ala Carte 🔥'), 'Yangneum Heat', 0),
   ((SELECT id FROM menu_items WHERE name = 'JBA12 - 12 pcs Ala Carte 🔥'), 'BBQ Buzz', 0);
 
+-- JBA30 - 30 pcs Ala Carte ₱1,180 [MEGA PARTY SIZE!]
+INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
+VALUES ('JBA30 - 30 pcs Ala Carte 🎉', 'Jumbo wings (30 pcs). Choose up to 6 flavors! MEGA PARTY SIZE!', 1180.00, 'wings-jumbo', true, true, '/images/chick-central-logo.jpg');
+
+INSERT INTO variations (menu_item_id, name, price) VALUES
+  ((SELECT id FROM menu_items WHERE name = 'JBA30 - 30 pcs Ala Carte 🎉'), 'Buffalo Blaze', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JBA30 - 30 pcs Ala Carte 🎉'), 'Soy Garlic Glaze', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JBA30 - 30 pcs Ala Carte 🎉'), 'Honey Butter Bliss', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JBA30 - 30 pcs Ala Carte 🎉'), 'Garlic Parmesan Charm', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JBA30 - 30 pcs Ala Carte 🎉'), 'Snow Cheese Magic', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JBA30 - 30 pcs Ala Carte 🎉'), 'Teriyaki Twist', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JBA30 - 30 pcs Ala Carte 🎉'), 'Yangneum Heat', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JBA30 - 30 pcs Ala Carte 🎉'), 'BBQ Buzz', 0);
+
 -- ========================================
 -- CATEGORY 3: WINGS - JUNIOR (Red) [NEW!]
 -- ========================================
@@ -231,6 +248,20 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JRA12 - 12 pcs Ala Carte 🔥'), 'Teriyaki Twist', 0),
   ((SELECT id FROM menu_items WHERE name = 'JRA12 - 12 pcs Ala Carte 🔥'), 'Yangneum Heat', 0),
   ((SELECT id FROM menu_items WHERE name = 'JRA12 - 12 pcs Ala Carte 🔥'), 'BBQ Buzz', 0);
+
+-- JRA30 - 30 pcs Ala Carte ₱790 [MEGA PARTY SIZE!]
+INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
+VALUES ('JRA30 - 30 pcs Ala Carte 🎉', 'Junior wings (30 pcs). Choose up to 6 flavors! MEGA PARTY SIZE!', 790.00, 'wings-junior', true, true, '/images/chick-central-logo.jpg');
+
+INSERT INTO variations (menu_item_id, name, price) VALUES
+  ((SELECT id FROM menu_items WHERE name = 'JRA30 - 30 pcs Ala Carte 🎉'), 'Buffalo Blaze', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JRA30 - 30 pcs Ala Carte 🎉'), 'Soy Garlic Glaze', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JRA30 - 30 pcs Ala Carte 🎉'), 'Honey Butter Bliss', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JRA30 - 30 pcs Ala Carte 🎉'), 'Garlic Parmesan Charm', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JRA30 - 30 pcs Ala Carte 🎉'), 'Snow Cheese Magic', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JRA30 - 30 pcs Ala Carte 🎉'), 'Teriyaki Twist', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JRA30 - 30 pcs Ala Carte 🎉'), 'Yangneum Heat', 0),
+  ((SELECT id FROM menu_items WHERE name = 'JRA30 - 30 pcs Ala Carte 🎉'), 'BBQ Buzz', 0);
 
 -- ========================================
 -- CATEGORY 4: DRUMSTICK (Red)
@@ -332,15 +363,16 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
 -- ========================================
 -- ✅ COMPLETE! 🎉
 -- ========================================
--- Your FULL Chick Central menu is loaded!
+-- Your FULL Chick Central menu is now loaded!
 -- 
--- 📊 MENU SUMMARY:
---   ⭐ Fun Bites (2 items) - Yellow
---   🟡 Wings - Jumbo (5 items) - Yellow  
---   🔴 Wings - Junior (5 items) - Red [NEW!]
---   🍗 Drumstick (6 items) - Red
---   🔥 8 Flavors each
+-- 📊 FINAL MENU SUMMARY:
+--   ⭐ Fun Bites (2 items)
+--   🟡 Wings - Jumbo (6 items including 30pcs!)
+--   🔴 Wings - Junior (6 items including 30pcs!)
+--   🍗 Drumstick (6 items)
+--   🔥 8 Delicious Flavors for each item
+--   🍚 Extra Rice add-on for all rice meals
 -- 
--- Total: 18 menu items
+-- Total: 20 menu items
 -- ========================================
 

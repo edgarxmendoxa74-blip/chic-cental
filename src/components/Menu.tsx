@@ -157,7 +157,7 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
             </div>
             <h4 className="font-bold text-chick-dark mb-2">Fill Details</h4>
             <p className="text-sm text-gray-600">
-              Choose Dine-in, Pickup, or Delivery and enter your information
+              Choose Dine-in or Pickup and enter your information
             </p>
           </div>
 
@@ -186,10 +186,6 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
             <div className="flex items-center space-x-2 bg-chick-beige px-4 py-2 rounded-full">
               <span>🥡</span>
               <span className="font-semibold">Quick Pickup</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-chick-beige px-4 py-2 rounded-full">
-              <span>🚚</span>
-              <span className="font-semibold">Fast Delivery</span>
             </div>
             <div className="flex items-center space-x-2 bg-chick-beige px-4 py-2 rounded-full">
               <span>💳</span>

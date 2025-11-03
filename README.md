@@ -12,7 +12,6 @@ A modern, full-featured food ordering website for Chick Central - specializing i
 - **Multiple Service Types**:
   - 🪑 Dine-in (party size selection)
   - 🥡 Pickup (time selection)
-  - 🚚 Delivery (address entry)
 - **GCash Payment** - QR code payment integration
 - **Messenger Checkout** - Send orders via Facebook Messenger
 
@@ -81,8 +80,7 @@ npm run build
 ### Database Setup
 1. Create a Supabase project
 2. Run migrations in `supabase/migrations/` folder
-3. Optionally import menu from `CHICK_CENTRAL_COMPLETE_MENU.sql`
-4. Run `ADD_30PCS_WINGS.sql` to add 30-piece party options
+3. Import complete menu from `RESTORE_CHICK_CENTRAL_COMPLETE.sql` in Supabase SQL Editor
 
 ## 📱 Usage
 
@@ -147,8 +145,7 @@ supabase/
 
 ## 🎯 Key Files
 
-- `CHICK_CENTRAL_COMPLETE_MENU.sql` - Full menu database backup
-- `ADD_30PCS_WINGS.sql` - Add 30-piece party options
+- `RESTORE_CHICK_CENTRAL_COMPLETE.sql` - Complete menu restoration script (20 items, all flavors, 30pcs options)
 - `.env` - Environment variables (not in git)
 - `vercel.json` - Vercel deployment config
 
