@@ -20,6 +20,8 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   const [customTime, setCustomTime] = useState('');
   // Dine-in specific state
   const [partySize, setPartySize] = useState(1);
+  // Delivery method state
+  const [deliveryMethod, setDeliveryMethod] = useState<'standard' | 'lalamove'>('standard');
   const [notes, setNotes] = useState('');
 
   React.useEffect(() => {
@@ -264,33 +266,65 @@ Please confirm this order to proceed. Thank you for choosing Chick Central! 🍗
                 <>
                   {/* Delivery Method Option */}
                   {isLalamoveConfigured() && (
-                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
                       <label className="block text-sm font-semibold text-blue-900 mb-3">
                         <Truck className="inline-block h-5 w-5 mr-2" />
-                        Delivery Method
+                        Choose Delivery Method *
                       </label>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Standard Delivery */}
                         <button
                           type="button"
-                          className="p-4 rounded-lg border-2 border-blue-400 bg-blue-100 text-blue-900 hover:bg-blue-200 transition-all duration-200"
+                          onClick={() => setDeliveryMethod('standard')}
+                          className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                            deliveryMethod === 'standard'
+                              ? 'border-blue-600 bg-blue-600 text-white shadow-lg transform scale-105'
+                              : 'border-blue-300 bg-white text-blue-900 hover:border-blue-400 hover:bg-blue-50'
+                          }`}
                         >
-                          <div className="text-2xl mb-1">🛵</div>
-                          <div className="text-sm font-medium">Standard Delivery</div>
-                          <div className="text-xs text-blue-700 mt-1">Own delivery</div>
+                          <div className="text-3xl mb-2">🛵</div>
+                          <div className="text-sm font-bold">Standard Delivery</div>
+                          <div className="text-xs mt-1 opacity-90">Own delivery service</div>
+                          {deliveryMethod === 'standard' && (
+                            <div className="mt-2 text-xs font-semibold">✓ Selected</div>
+                          )}
                         </button>
+
+                        {/* Lalamove Delivery */}
                         <button
                           type="button"
-                          className="p-4 rounded-lg border-2 border-green-400 bg-green-100 text-green-900 hover:bg-green-200 transition-all duration-200"
+                          onClick={() => setDeliveryMethod('lalamove')}
+                          className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                            deliveryMethod === 'lalamove'
+                              ? 'border-green-600 bg-green-600 text-white shadow-lg transform scale-105'
+                              : 'border-green-300 bg-white text-green-900 hover:border-green-400 hover:bg-green-50'
+                          }`}
                         >
-                          <div className="text-2xl mb-1">🚚</div>
-                          <div className="text-sm font-medium">Lalamove</div>
-                          <div className="text-xs text-green-700 mt-1">Professional delivery</div>
+                          <div className="text-3xl mb-2">🚚</div>
+                          <div className="text-sm font-bold">Lalamove</div>
+                          <div className="text-xs mt-1 opacity-90">Professional delivery</div>
+                          {deliveryMethod === 'lalamove' && (
+                            <div className="mt-2 text-xs font-semibold">✓ Selected</div>
+                          )}
                         </button>
                       </div>
-                      <p className="text-xs text-blue-600 mt-3 flex items-center">
-                        <span className="mr-1">💡</span>
-                        Lalamove: Fast, tracked delivery with real-time updates
-                      </p>
+
+                      {/* Info Banner */}
+                      <div className={`mt-3 p-3 rounded-lg transition-all duration-200 ${
+                        deliveryMethod === 'lalamove' 
+                          ? 'bg-green-100 border border-green-300' 
+                          : 'bg-blue-100 border border-blue-300'
+                      }`}>
+                        <p className="text-xs flex items-start">
+                          <span className="mr-2 text-base">💡</span>
+                          <span className={deliveryMethod === 'lalamove' ? 'text-green-800' : 'text-blue-800'}>
+                            {deliveryMethod === 'lalamove' 
+                              ? 'Lalamove: Fast, tracked delivery with real-time updates and professional drivers'
+                              : 'Standard: Regular delivery service with our own delivery team'
+                            }
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   )}
                   
