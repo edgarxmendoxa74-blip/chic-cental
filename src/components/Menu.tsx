@@ -19,9 +19,10 @@ interface MenuProps {
   addToCart: (item: MenuItem, quantity?: number, variation?: any, addOns?: any[]) => void;
   cartItems: CartItem[];
   updateQuantity: (id: string, quantity: number) => void;
+  selectedCategory?: string;
 }
 
-const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuantity }) => {
+const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuantity, selectedCategory = 'all' }) => {
   const { categories } = useCategories();
   const [activeCategory, setActiveCategory] = React.useState('hot-coffee');
 
@@ -87,10 +88,6 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
 
   return (
     <>
-      <MobileNav 
-        activeCategory={activeCategory}
-        onCategoryClick={handleCategoryClick}
-      />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Banner Section */}
       <div className="text-center mb-12 bg-chick-gradient rounded-2xl shadow-2xl py-8 px-6">
@@ -211,7 +208,9 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
         </div>
       </div>
 
-      {categories.map((category) => {
+      {categories
+        .filter(category => selectedCategory === 'all' || category.id === selectedCategory)
+        .map((category) => {
         const categoryItems = menuItems.filter(item => item.category === category.id);
         
         if (categoryItems.length === 0) return null;

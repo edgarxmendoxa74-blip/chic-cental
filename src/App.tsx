@@ -14,7 +14,7 @@ function MainApp() {
   const cart = useCart();
   const { menuItems } = useMenu();
   const [currentView, setCurrentView] = React.useState<'menu' | 'cart' | 'checkout'>('menu');
-  const [selectedCategory, setSelectedCategory] = React.useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = React.useState('all');
 
   const handleViewChange = (view: 'menu' | 'cart' | 'checkout') => {
     setCurrentView(view);
@@ -24,11 +24,6 @@ function MainApp() {
     setSelectedCategory(categoryId);
   };
 
-  // Filter menu items based on selected category
-  const filteredMenuItems = selectedCategory === 'all' 
-    ? menuItems 
-    : menuItems.filter(item => item.category === selectedCategory);
-
   return (
     <div className="min-h-screen bg-chick-cream font-inter">
       <Header 
@@ -36,14 +31,21 @@ function MainApp() {
         onCartClick={() => handleViewChange('cart')}
         onMenuClick={() => handleViewChange('menu')}
       />
-      <SubNav selectedCategory={selectedCategory} onCategoryClick={handleCategoryClick} />
+      
+      {currentView === 'menu' && (
+        <SubNav 
+          selectedCategory={selectedCategory}
+          onCategoryClick={handleCategoryClick}
+        />
+      )}
       
       {currentView === 'menu' && (
         <Menu 
-          menuItems={filteredMenuItems}
+          menuItems={menuItems}
           addToCart={cart.addToCart}
           cartItems={cart.cartItems}
           updateQuantity={cart.updateQuantity}
+          selectedCategory={selectedCategory}
         />
       )}
       
