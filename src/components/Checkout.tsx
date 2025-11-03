@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Clock } from 'lucide-react';
+import { ArrowLeft, Clock, Truck } from 'lucide-react';
 import { CartItem, ServiceType } from '../types';
+import { isLalamoveConfigured } from '../config/lalamove';
 
 interface CheckoutProps {
   cartItems: CartItem[];
@@ -261,6 +262,38 @@ Please confirm this order to proceed. Thank you for choosing Chick Central! 🍗
               {/* Delivery Address */}
               {serviceType === 'delivery' && (
                 <>
+                  {/* Delivery Method Option */}
+                  {isLalamoveConfigured() && (
+                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
+                      <label className="block text-sm font-semibold text-blue-900 mb-3">
+                        <Truck className="inline-block h-5 w-5 mr-2" />
+                        Delivery Method
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          className="p-4 rounded-lg border-2 border-blue-400 bg-blue-100 text-blue-900 hover:bg-blue-200 transition-all duration-200"
+                        >
+                          <div className="text-2xl mb-1">🛵</div>
+                          <div className="text-sm font-medium">Standard Delivery</div>
+                          <div className="text-xs text-blue-700 mt-1">Own delivery</div>
+                        </button>
+                        <button
+                          type="button"
+                          className="p-4 rounded-lg border-2 border-green-400 bg-green-100 text-green-900 hover:bg-green-200 transition-all duration-200"
+                        >
+                          <div className="text-2xl mb-1">🚚</div>
+                          <div className="text-sm font-medium">Lalamove</div>
+                          <div className="text-xs text-green-700 mt-1">Professional delivery</div>
+                        </button>
+                      </div>
+                      <p className="text-xs text-blue-600 mt-3 flex items-center">
+                        <span className="mr-1">💡</span>
+                        Lalamove: Fast, tracked delivery with real-time updates
+                      </p>
+                    </div>
+                  )}
+                  
                   <div>
                     <label className="block text-sm font-medium text-black mb-2">Delivery Address *</label>
                     <textarea
@@ -347,17 +380,15 @@ Please confirm this order to proceed. Thank you for choosing Chick Central! 🍗
             <div className="bg-white rounded-lg p-4 mb-4">
               <p className="text-xl font-bold text-black mb-4 text-center">Amount to Pay: ₱{totalPrice}</p>
               
-              {/* QR Code - Cropped to show ONLY scannable QR code */}
+              {/* QR Code - Displayed at proper size for scanning */}
               <div className="flex justify-center mb-4">
-                <div className="w-72 h-72 rounded-lg border-4 border-blue-500 shadow-2xl overflow-hidden bg-white">
+                <div className="w-72 h-72 rounded-lg border-4 border-blue-500 shadow-2xl overflow-hidden bg-white p-4 flex items-center justify-center">
                   <img 
                     src="/images/payment-qr/gcash-qr-code.jpg" 
                     alt="GCash QR Code - Scan to Pay"
                     className="w-full h-full"
                     style={{ 
-                      objectFit: 'cover',
-                      objectPosition: 'center 32%',
-                      transform: 'scale(1.8)',
+                      objectFit: 'contain',
                       imageRendering: 'crisp-edges'
                     }}
                     onError={(e) => {
