@@ -23,8 +23,13 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuantity, selectedCategory = 'all' }) => {
-  const { categories } = useCategories();
+  const { categories, loading: categoriesLoading } = useCategories();
   const [activeCategory, setActiveCategory] = React.useState('hot-coffee');
+
+  // Memoize filtered categories to avoid unnecessary recalculations
+  const filteredCategories = React.useMemo(() => {
+    return categories.filter(category => selectedCategory === 'all' || category.id === selectedCategory);
+  }, [categories, selectedCategory]);
 
   // Preload images when menu items change
   React.useEffect(() => {
@@ -208,9 +213,26 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
         </div>
       </div>
 
-      {categories
-        .filter(category => selectedCategory === 'all' || category.id === selectedCategory)
-        .map((category) => {
+      {categoriesLoading ? (
+        // Loading skeleton
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1,2,3,4,5,6].map(i => (
+            <div key={i} className="bg-white rounded-2xl shadow-sm overflow-hidden animate-pulse">
+              <div className="h-48 bg-gray-200" />
+              <div className="p-5 space-y-3">
+                <div className="h-6 bg-gray-200 rounded w-3/4" />
+                <div className="h-4 bg-gray-200 rounded w-full" />
+                <div className="h-4 bg-gray-200 rounded w-2/3" />
+                <div className="flex justify-between items-center">
+                  <div className="h-8 bg-gray-200 rounded w-24" />
+                  <div className="h-10 bg-gray-200 rounded w-28" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        filteredCategories.map((category) => {
         const categoryItems = menuItems.filter(item => item.category === category.id);
         
         if (categoryItems.length === 0) return null;
@@ -239,7 +261,8 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
             </div>
           </section>
         );
-      })}
+      })
+      )}
       </main>
     </>
   );

@@ -9,7 +9,7 @@ interface MenuItemCardProps {
   onUpdateQuantity: (id: string, quantity: number) => void;
 }
 
-const MenuItemCard: React.FC<MenuItemCardProps> = ({ 
+const MenuItemCard: React.FC<MenuItemCardProps> = React.memo(({ 
   item, 
   onAddToCart, 
   quantity, 
@@ -103,6 +103,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
               decoding="async"
+              fetchPriority={item.popular ? "high" : "auto"}
               onError={(e) => {
                 // Try fallback to logo
                 if (e.currentTarget.src !== '/images/chick-central-logo.jpg') {
@@ -383,6 +384,8 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
       )}
     </>
   );
-};
+});
+
+MenuItemCard.displayName = 'MenuItemCard';
 
 export default MenuItemCard;
