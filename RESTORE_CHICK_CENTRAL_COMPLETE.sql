@@ -46,7 +46,7 @@ INSERT INTO categories (id, name, icon, sort_order, active) VALUES
 
 -- FBR - Fun Bites with Rice ₱59
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('FBR - Fun Bites with Rice 🍚', 'Our best-selling fun bites served with steaming rice. Choose your favorite flavor!', 59.00, 'fun-bites', true, true, '/images/chick-central-logo.jpg');
+VALUES ('FBR - Fun Bites with Rice 🍚', 'Our best-selling fun bites served with steaming rice. Choose your favorite flavor!', 59.00, 'fun-bites', true, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'FBR - Fun Bites with Rice 🍚'), 'Buffalo Blaze', 0),
@@ -63,7 +63,7 @@ INSERT INTO add_ons (menu_item_id, name, price, category) VALUES
 
 -- FB - Fun Bites Ala Carte ₱49
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('FB - Fun Bites Ala Carte', 'Our best-selling fun bites without rice. Choose your favorite flavor!', 49.00, 'fun-bites', false, true, '/images/chick-central-logo.jpg');
+VALUES ('FB - Fun Bites Ala Carte', 'Our best-selling fun bites without rice. Choose your favorite flavor!', 49.00, 'fun-bites', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'FB - Fun Bites Ala Carte'), 'Buffalo Blaze', 0),
@@ -81,7 +81,7 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
 
 -- JBW2 - 2 pcs with Rice ₱99
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JBW2 - 2 pcs with Rice 🍚', 'Jumbo wings (2 pcs) with rice. Choose 1 flavor!', 99.00, 'wings-jumbo', false, true, '/images/chick-central-logo.jpg');
+VALUES ('JBW2 - 2 pcs with Rice 🍚', 'Jumbo wings (2 pcs) with rice. Choose 1 flavor!', 99.00, 'wings-jumbo', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JBW2 - 2 pcs with Rice 🍚'), 'Buffalo Blaze', 0),
@@ -98,7 +98,7 @@ INSERT INTO add_ons (menu_item_id, name, price, category) VALUES
 
 -- JBW4 - 4 pcs with Rice ₱179
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JBW4 - 4 pcs with Rice 🍚', 'Jumbo wings (4 pcs) with rice. Choose 1 flavor!', 179.00, 'wings-jumbo', true, true, '/images/chick-central-logo.jpg');
+VALUES ('JBW4 - 4 pcs with Rice 🍚', 'Jumbo wings (4 pcs) with rice. Choose 1 flavor!', 179.00, 'wings-jumbo', true, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JBW4 - 4 pcs with Rice 🍚'), 'Buffalo Blaze', 0),
@@ -115,7 +115,7 @@ INSERT INTO add_ons (menu_item_id, name, price, category) VALUES
 
 -- JBA4 - 4 pcs Ala Carte ₱169
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JBA4 - 4 pcs Ala Carte', 'Jumbo wings (4 pcs). Choose 1 flavor!', 169.00, 'wings-jumbo', false, true, '/images/chick-central-logo.jpg');
+VALUES ('JBA4 - 4 pcs Ala Carte', 'Jumbo wings (4 pcs). Choose 1 flavor!', 169.00, 'wings-jumbo', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JBA4 - 4 pcs Ala Carte'), 'Buffalo Blaze', 0),
@@ -129,7 +129,7 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
 
 -- JBA6 - 6 pcs Ala Carte ₱249
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JBA6 - 6 pcs Ala Carte', 'Jumbo wings (6 pcs). Choose up to 2 flavors!', 249.00, 'wings-jumbo', false, true, '/images/chick-central-logo.jpg');
+VALUES ('JBA6 - 6 pcs Ala Carte', 'Jumbo wings (6 pcs). Choose up to 2 flavors!', 249.00, 'wings-jumbo', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JBA6 - 6 pcs Ala Carte'), 'Buffalo Blaze', 0),
@@ -143,7 +143,7 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
 
 -- JBA12 - 12 pcs Ala Carte ₱499
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JBA12 - 12 pcs Ala Carte 🔥', 'Jumbo wings (12 pcs). Choose up to 3 flavors! PARTY SIZE!', 499.00, 'wings-jumbo', true, true, '/images/chick-central-logo.jpg');
+VALUES ('JBA12 - 12 pcs Ala Carte 🔥', 'Jumbo wings (12 pcs). Choose up to 3 flavors!', 499.00, 'wings-jumbo', true, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JBA12 - 12 pcs Ala Carte 🔥'), 'Buffalo Blaze', 0),
@@ -155,9 +155,9 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JBA12 - 12 pcs Ala Carte 🔥'), 'Yangneum Heat', 0),
   ((SELECT id FROM menu_items WHERE name = 'JBA12 - 12 pcs Ala Carte 🔥'), 'BBQ Buzz', 0);
 
--- JBA30 - 30 pcs Ala Carte ₱1,180 [MEGA PARTY SIZE!]
+-- JBA30 - 30 pcs Ala Carte ₱1,180
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JBA30 - 30 pcs Ala Carte 🎉', 'Jumbo wings (30 pcs). Choose up to 6 flavors! MEGA PARTY SIZE!', 1180.00, 'wings-jumbo', true, true, '/images/chick-central-logo.jpg');
+VALUES ('JBA30 - 30 pcs Ala Carte 🎉', 'Jumbo wings (30 pcs). Choose up to 6 flavors!', 1180.00, 'wings-jumbo', true, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JBA30 - 30 pcs Ala Carte 🎉'), 'Buffalo Blaze', 0),
@@ -175,7 +175,7 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
 
 -- JRW2 - 2 pcs with Rice ₱69
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JRW2 - 2 pcs with Rice 🍚', 'Junior wings (2 pcs) with rice. Choose 1 flavor!', 69.00, 'wings-junior', false, true, '/images/chick-central-logo.jpg');
+VALUES ('JRW2 - 2 pcs with Rice 🍚', 'Junior wings (2 pcs) with rice. Choose 1 flavor!', 69.00, 'wings-junior', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JRW2 - 2 pcs with Rice 🍚'), 'Buffalo Blaze', 0),
@@ -192,7 +192,7 @@ INSERT INTO add_ons (menu_item_id, name, price, category) VALUES
 
 -- JRW4 - 4 pcs with Rice ₱119
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JRW4 - 4 pcs with Rice 🍚', 'Junior wings (4 pcs) with rice. Choose 1 flavor!', 119.00, 'wings-junior', true, true, '/images/chick-central-logo.jpg');
+VALUES ('JRW4 - 4 pcs with Rice 🍚', 'Junior wings (4 pcs) with rice. Choose 1 flavor!', 119.00, 'wings-junior', true, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JRW4 - 4 pcs with Rice 🍚'), 'Buffalo Blaze', 0),
@@ -209,7 +209,7 @@ INSERT INTO add_ons (menu_item_id, name, price, category) VALUES
 
 -- JRA4 - 4 pcs Ala Carte ₱109
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JRA4 - 4 pcs Ala Carte', 'Junior wings (4 pcs). Choose 1 flavor!', 109.00, 'wings-junior', false, true, '/images/chick-central-logo.jpg');
+VALUES ('JRA4 - 4 pcs Ala Carte', 'Junior wings (4 pcs). Choose 1 flavor!', 109.00, 'wings-junior', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JRA4 - 4 pcs Ala Carte'), 'Buffalo Blaze', 0),
@@ -223,7 +223,7 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
 
 -- JRA6 - 6 pcs Ala Carte ₱159
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JRA6 - 6 pcs Ala Carte', 'Junior wings (6 pcs). Choose up to 2 flavors!', 159.00, 'wings-junior', false, true, '/images/chick-central-logo.jpg');
+VALUES ('JRA6 - 6 pcs Ala Carte', 'Junior wings (6 pcs). Choose up to 2 flavors!', 159.00, 'wings-junior', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JRA6 - 6 pcs Ala Carte'), 'Buffalo Blaze', 0),
@@ -237,7 +237,7 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
 
 -- JRA12 - 12 pcs Ala Carte ₱299
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JRA12 - 12 pcs Ala Carte 🔥', 'Junior wings (12 pcs). Choose up to 3 flavors! PARTY SIZE!', 299.00, 'wings-junior', true, true, '/images/chick-central-logo.jpg');
+VALUES ('JRA12 - 12 pcs Ala Carte 🔥', 'Junior wings (12 pcs). Choose up to 3 flavors!', 299.00, 'wings-junior', true, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JRA12 - 12 pcs Ala Carte 🔥'), 'Buffalo Blaze', 0),
@@ -249,9 +249,9 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JRA12 - 12 pcs Ala Carte 🔥'), 'Yangneum Heat', 0),
   ((SELECT id FROM menu_items WHERE name = 'JRA12 - 12 pcs Ala Carte 🔥'), 'BBQ Buzz', 0);
 
--- JRA30 - 30 pcs Ala Carte ₱790 [MEGA PARTY SIZE!]
+-- JRA30 - 30 pcs Ala Carte ₱790
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('JRA30 - 30 pcs Ala Carte 🎉', 'Junior wings (30 pcs). Choose up to 6 flavors! MEGA PARTY SIZE!', 790.00, 'wings-junior', true, true, '/images/chick-central-logo.jpg');
+VALUES ('JRA30 - 30 pcs Ala Carte 🎉', 'Junior wings (30 pcs). Choose up to 6 flavors!', 790.00, 'wings-junior', true, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'JRA30 - 30 pcs Ala Carte 🎉'), 'Buffalo Blaze', 0),
@@ -269,7 +269,7 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
 
 -- DR1 - 1 pc with Rice ₱69
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('DR1 - 1 pc with Rice 🍚', 'Crispy drumstick (1 pc) with rice. Choose 1 flavor!', 69.00, 'drumstick', false, true, '/images/chick-central-logo.jpg');
+VALUES ('DR1 - 1 pc with Rice 🍚', 'Crispy drumstick (1 pc) with rice. Choose 1 flavor!', 69.00, 'drumstick', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'DR1 - 1 pc with Rice 🍚'), 'Buffalo Blaze', 0),
@@ -286,7 +286,7 @@ INSERT INTO add_ons (menu_item_id, name, price, category) VALUES
 
 -- DR2 - 2 pcs with Rice ₱119
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('DR2 - 2 pcs with Rice 🍚', 'Crispy drumstick (2 pcs) with rice. Choose 1 flavor!', 119.00, 'drumstick', true, true, '/images/chick-central-logo.jpg');
+VALUES ('DR2 - 2 pcs with Rice 🍚', 'Crispy drumstick (2 pcs) with rice. Choose 1 flavor!', 119.00, 'drumstick', true, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'DR2 - 2 pcs with Rice 🍚'), 'Buffalo Blaze', 0),
@@ -303,7 +303,7 @@ INSERT INTO add_ons (menu_item_id, name, price, category) VALUES
 
 -- DR3 - 3 pcs with Rice ₱169
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('DR3 - 3 pcs with Rice 🍚', 'Crispy drumstick (3 pcs) with rice. Choose 1 flavor!', 169.00, 'drumstick', false, true, '/images/chick-central-logo.jpg');
+VALUES ('DR3 - 3 pcs with Rice 🍚', 'Crispy drumstick (3 pcs) with rice. Choose 1 flavor!', 169.00, 'drumstick', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'DR3 - 3 pcs with Rice 🍚'), 'Buffalo Blaze', 0),
@@ -320,7 +320,7 @@ INSERT INTO add_ons (menu_item_id, name, price, category) VALUES
 
 -- DRA3 - 3 pcs Ala Carte ₱159
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('DRA3 - 3 pcs Ala Carte', 'Crispy drumstick (3 pcs). Choose 1 flavor!', 159.00, 'drumstick', false, true, '/images/chick-central-logo.jpg');
+VALUES ('DRA3 - 3 pcs Ala Carte', 'Crispy drumstick (3 pcs). Choose 1 flavor!', 159.00, 'drumstick', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'DRA3 - 3 pcs Ala Carte'), 'Buffalo Blaze', 0),
@@ -334,7 +334,7 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
 
 -- DRA6 - 6 pcs Ala Carte ₱309
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('DRA6 - 6 pcs Ala Carte', 'Crispy drumstick (6 pcs). Choose up to 2 flavors!', 309.00, 'drumstick', false, true, '/images/chick-central-logo.jpg');
+VALUES ('DRA6 - 6 pcs Ala Carte', 'Crispy drumstick (6 pcs). Choose up to 2 flavors!', 309.00, 'drumstick', false, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'DRA6 - 6 pcs Ala Carte'), 'Buffalo Blaze', 0),
@@ -348,7 +348,7 @@ INSERT INTO variations (menu_item_id, name, price) VALUES
 
 -- DRA12 - 12 pcs Ala Carte ₱599
 INSERT INTO menu_items (name, description, base_price, category, popular, available, image_url) 
-VALUES ('DRA12 - 12 pcs Ala Carte 🔥', 'Crispy drumstick (12 pcs). Choose up to 3 flavors! PARTY SIZE!', 599.00, 'drumstick', true, true, '/images/chick-central-logo.jpg');
+VALUES ('DRA12 - 12 pcs Ala Carte 🔥', 'Crispy drumstick (12 pcs). Choose up to 3 flavors!', 599.00, 'drumstick', true, true, NULL);
 
 INSERT INTO variations (menu_item_id, name, price) VALUES
   ((SELECT id FROM menu_items WHERE name = 'DRA12 - 12 pcs Ala Carte 🔥'), 'Buffalo Blaze', 0),

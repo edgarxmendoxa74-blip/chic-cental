@@ -20,14 +20,14 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
             className="flex items-center space-x-3 text-white hover:text-chick-cream transition-colors duration-200"
           >
             {loading ? (
-              <div className="w-12 h-12 bg-white/20 rounded-full animate-pulse" />
+              <div className="h-12 w-12 bg-white/20 rounded-lg animate-pulse" />
             ) : (
               <img 
-                src={siteSettings?.site_logo || "/logo.jpg"} 
+                src={siteSettings?.site_logo || "/images/chick-central-logo.jpg"} 
                 alt="Chick Central"
-                className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-lg"
+                className="h-12 w-auto object-contain rounded-lg shadow-lg"
                 onError={(e) => {
-                  e.currentTarget.src = "/logo.jpg";
+                  e.currentTarget.src = "/images/chick-central-logo.jpg";
                 }}
               />
             )}

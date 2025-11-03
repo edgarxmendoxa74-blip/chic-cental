@@ -269,7 +269,7 @@ const AdminDashboard: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'ClickEats@Admin!2025') {
+    if (password === 'ChickCentral@Admin!2025') {
       setIsAuthenticated(true);
       localStorage.setItem('beracah_admin_auth', 'true');
       setLoginError('');
@@ -568,15 +568,6 @@ const AdminDashboard: React.FC = () => {
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
-                  </div>
-                  
-                  {/* Simple Image Upload - Like Menu Item Image */}
-                  <div className="mt-3">
-                    <ImageUpload
-                      currentImage={variation.image || ''}
-                      onImageChange={(imageUrl) => updateVariation(index, 'image', imageUrl || '')}
-                      className="mb-0"
-                    />
                   </div>
                 </div>
               ))}

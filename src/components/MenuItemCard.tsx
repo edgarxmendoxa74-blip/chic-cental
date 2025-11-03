@@ -104,7 +104,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
               loading="lazy"
               decoding="async"
               onError={(e) => {
-                // Try fallback to logo, then show placeholder
+                // Try fallback to logo
                 if (e.currentTarget.src !== '/images/chick-central-logo.jpg') {
                   e.currentTarget.src = '/images/chick-central-logo.jpg';
                 } else {
@@ -277,16 +277,6 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
                             onChange={() => setSelectedVariation(variation)}
                             className="w-4 h-4 text-chick-orange focus:ring-chick-golden flex-shrink-0"
                           />
-                          {variation.image && (
-                            <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                              <img 
-                                src={variation.image} 
-                                alt={variation.name}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            </div>
-                          )}
                           <div className="flex-1 flex items-center justify-between">
                             <span className="font-medium text-gray-900">
                               {variation.name}

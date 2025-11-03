@@ -97,9 +97,21 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
           🍗 Chick Central
         </h2>
-        <p className="text-xl md:text-2xl text-white font-semibold drop-shadow-md mb-8">
+        <p className="text-xl md:text-2xl text-white font-semibold drop-shadow-md mb-4">
           Flavored wings that hits different! 🔥
         </p>
+        
+        {/* Location and Hours */}
+        <div className="flex flex-wrap justify-center gap-6 mb-8 text-white">
+          <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+            <span className="text-xl">📍</span>
+            <span className="font-medium">Taguig, Manila, Philippines</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+            <span className="text-xl">🕐</span>
+            <span className="font-medium">Open: 7:00 AM - 12:00 AM</span>
+          </div>
+        </div>
         
         {/* Flavors Poster */}
         <div className="mt-6 flex justify-center">
@@ -157,7 +169,7 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
             </div>
             <h4 className="font-bold text-chick-dark mb-2">Fill Details</h4>
             <p className="text-sm text-gray-600">
-              Choose Dine-in or Pickup and enter your information
+              Choose Dine-in, Pickup, or Delivery and enter your information
             </p>
           </div>
 
@@ -186,6 +198,10 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
             <div className="flex items-center space-x-2 bg-chick-beige px-4 py-2 rounded-full">
               <span>🥡</span>
               <span className="font-semibold">Quick Pickup</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-chick-beige px-4 py-2 rounded-full">
+              <span>🛵</span>
+              <span className="font-semibold">Fast Delivery</span>
             </div>
             <div className="flex items-center space-x-2 bg-chick-beige px-4 py-2 rounded-full">
               <span>💳</span>

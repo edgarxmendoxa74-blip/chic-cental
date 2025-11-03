@@ -39,18 +39,18 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
       : '';
     
     const orderDetails = `
-🛒 Chick Central ORDER
+CHICK CENTRAL ORDER
 
-👤 Customer: ${customerName}
-📞 Contact: ${contactNumber}
-📍 Service: ${serviceType.charAt(0).toUpperCase() + serviceType.slice(1)}
-${serviceType === 'pickup' ? `⏰ Pickup Time: ${timeInfo}` : ''}
-${serviceType === 'dine-in' ? dineInInfo : ''}
+Customer: ${customerName}
+Contact: ${contactNumber}
+Service: ${serviceType.charAt(0).toUpperCase() + serviceType.slice(1)}
+${serviceType === 'delivery' ? `Address: ${address}${landmark ? `\nLandmark: ${landmark}` : ''}` : ''}
+${serviceType === 'pickup' ? `Pickup Time: ${timeInfo}` : ''}
+${serviceType === 'dine-in' ? `Party Size: ${partySize} person${partySize !== 1 ? 's' : ''}` : ''}
 
-
-📋 ORDER DETAILS:
+ORDER DETAILS:
 ${cartItems.map(item => {
-  let itemDetails = `• ${item.name}`;
+  let itemDetails = `- ${item.name}`;
   if (item.selectedVariation) {
     itemDetails += ` (${item.selectedVariation.name})`;
   }
@@ -61,28 +61,29 @@ ${cartItems.map(item => {
         : addOn.name
     ).join(', ')}`;
   }
-  itemDetails += ` x${item.quantity} - ₱${item.totalPrice * item.quantity}`;
+  itemDetails += ` x${item.quantity} - P${item.totalPrice * item.quantity}`;
   return itemDetails;
 }).join('\n')}
 
-💰 TOTAL: ₱${totalPrice}
+TOTAL: P${totalPrice}
 
-💳 Payment: GCash
-📸 Payment Screenshot: Please attach your payment receipt screenshot
+Payment: GCash
+Payment Screenshot: Please attach your payment receipt screenshot
 
-${notes ? `📝 Notes: ${notes}` : ''}
+${notes ? `Notes: ${notes}` : ''}
 
-Please confirm this order to proceed. Thank you for choosing Chick Central! 🍗
+Please confirm this order to proceed. Thank you for choosing Chick Central!
     `.trim();
 
     const encodedMessage = encodeURIComponent(orderDetails);
-    const messengerUrl = `https://m.me/61579693577478?text=${encodedMessage}`;
+    const messengerUrl = `https://m.me/822055400987696?text=${encodedMessage}`;
     
     window.open(messengerUrl, '_blank');
     
   };
 
   const isDetailsValid = customerName && contactNumber && 
+    (serviceType !== 'delivery' || address) && 
     (serviceType !== 'pickup' || (pickupTime !== 'custom' || customTime)) &&
     (serviceType !== 'dine-in' || partySize > 0);
 
@@ -166,10 +167,11 @@ Please confirm this order to proceed. Thank you for choosing Chick Central! 🍗
               {/* Service Type */}
               <div>
                 <label className="block text-sm font-medium text-black mb-3">Service Type *</label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   {[
                     { value: 'dine-in', label: 'Dine In', icon: '🪑' },
-                    { value: 'pickup', label: 'Pickup', icon: '🚶' }
+                    { value: 'pickup', label: 'Pickup', icon: '🚶' },
+                    { value: 'delivery', label: 'Delivery', icon: '🛵' }
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -253,6 +255,34 @@ Please confirm this order to proceed. Thank you for choosing Chick Central! 🍗
                     )}
                   </div>
                 </div>
+              )}
+
+              {/* Delivery Address */}
+              {serviceType === 'delivery' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-black mb-2">Delivery Address *</label>
+                    <textarea
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      className="w-full px-4 py-3 border border-chick-golden rounded-lg focus:ring-2 focus:ring-chick-orange focus:border-transparent transition-all duration-200"
+                      placeholder="Enter your complete delivery address"
+                      rows={3}
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-black mb-2">Landmark</label>
+                    <input
+                      type="text"
+                      value={landmark}
+                      onChange={(e) => setLandmark(e.target.value)}
+                      className="w-full px-4 py-3 border border-chick-golden rounded-lg focus:ring-2 focus:ring-chick-orange focus:border-transparent transition-all duration-200"
+                      placeholder="e.g., Near McDonald's, Beside 7-Eleven, In front of school"
+                    />
+                  </div>
+                </>
               )}
 
               {/* Special Notes */}
@@ -348,11 +378,11 @@ Please confirm this order to proceed. Thank you for choosing Chick Central! 🍗
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-200">
                 <span className="text-sm text-gray-600">Mobile Number:</span>
-                <span className="font-mono font-semibold text-gray-900">+63 905 293 ****</span>
+                <span className="font-mono font-semibold text-gray-900">0905 293 1408</span>
               </div>
               <div className="flex justify-between items-center py-2">
                 <span className="text-sm text-gray-600">Account Name:</span>
-                <span className="font-semibold text-gray-900">FR**Z EM**N T.</span>
+                <span className="font-semibold text-gray-900">Chick Central</span>
               </div>
             </div>
           </div>
@@ -385,6 +415,12 @@ Please confirm this order to proceed. Thank you for choosing Chick Central! 🍗
               <p className="text-sm text-gray-600">Name: {customerName}</p>
               <p className="text-sm text-gray-600">Contact: {contactNumber}</p>
               <p className="text-sm text-gray-600">Service: {serviceType.charAt(0).toUpperCase() + serviceType.slice(1)}</p>
+              {serviceType === 'delivery' && (
+                <>
+                  <p className="text-sm text-gray-600">Address: {address}</p>
+                  {landmark && <p className="text-sm text-gray-600">Landmark: {landmark}</p>}
+                </>
+              )}
               {serviceType === 'pickup' && (
                 <p className="text-sm text-gray-600">
                   Pickup Time: {pickupTime === 'custom' ? customTime : `${pickupTime} minutes`}

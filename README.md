@@ -2,6 +2,11 @@
 
 A modern, full-featured food ordering website for Chick Central - specializing in flavored chicken wings and fun bites.
 
+## 📍 Location & Hours
+
+**Location:** Taguig, Manila, Philippines  
+**Operating Hours:** 7:00 AM - 12:00 AM (Daily)
+
 ## 🌟 Features
 
 ### Customer Features
@@ -12,6 +17,7 @@ A modern, full-featured food ordering website for Chick Central - specializing i
 - **Multiple Service Types**:
   - 🪑 Dine-in (party size selection)
   - 🥡 Pickup (time selection)
+  - 🛵 Delivery (address entry)
 - **GCash Payment** - QR code payment integration
 - **Messenger Checkout** - Send orders via Facebook Messenger
 

@@ -5,24 +5,29 @@ export default {
     extend: {
       colors: {
         chick: {
-          // Primary yellows (chicken/egg inspired)
-          yellow: '#FDB813',      // Bright chick yellow
-          golden: '#F5A623',      // Golden fried chicken
-          sunset: '#FF9F1C',      // Warm sunset orange
+          // Primary yellows (matching logo)
+          yellow: '#FFD700',      // Bright golden yellow (logo background)
+          golden: '#FFC107',      // Vibrant golden
+          sunset: '#FFB300',      // Warm sunset
           
           // Accent colors
-          orange: '#FF6B35',      // Spicy hot chicken
-          red: '#E63946',         // Hot sauce red
+          orange: '#FF9800',      // Warm orange accent
+          red: '#E53935',         // Chicken red (comb/wattle)
+          
+          // Brown tones (matching logo banner)
+          brown: '#6B4423',       // Chocolate brown (logo banner)
+          darkBrown: '#5D4037',   // Rich dark brown
+          lightBrown: '#8D6E63',  // Light brown accent
+          dark: '#3E2723',        // Deep brown
           
           // Neutral tones
-          cream: '#FFF8E7',       // Soft cream (egg white)
-          beige: '#F4E4C1',       // Light beige (breading)
-          brown: '#8B4513',       // Earthy brown (coop)
-          dark: '#2D1B00',        // Rich dark brown
+          cream: '#FFFBF0',       // Soft cream (egg white)
+          beige: '#FFF8E1',       // Light beige
+          white: '#FFFFFF',       // Pure white
           
           // Supporting colors
           sage: '#9CAF88',        // Fresh herbs
-          charcoal: '#1A1A1A',    // Deep charcoal
+          charcoal: '#212121',    // Deep charcoal
         },
         // Keep ramen for backwards compatibility
         ramen: {
