@@ -347,17 +347,18 @@ Please confirm this order to proceed. Thank you for choosing Chick Central! 🍗
             <div className="bg-white rounded-lg p-4 mb-4">
               <p className="text-xl font-bold text-black mb-4 text-center">Amount to Pay: ₱{totalPrice}</p>
               
-              {/* QR Code - Large and Centered - Cropped to show only QR */}
+              {/* QR Code - Cropped to show ONLY scannable QR code */}
               <div className="flex justify-center mb-4">
-                <div className="w-64 h-64 rounded-lg border-4 border-blue-400 shadow-xl overflow-hidden bg-white">
+                <div className="w-72 h-72 rounded-lg border-4 border-blue-500 shadow-2xl overflow-hidden bg-white">
                   <img 
                     src="/images/payment-qr/gcash-qr-code.jpg" 
-                    alt="GCash QR Code"
-                    className="w-full h-full object-cover"
+                    alt="GCash QR Code - Scan to Pay"
+                    className="w-full h-full"
                     style={{ 
                       objectFit: 'cover',
-                      objectPosition: 'center 35%',
-                      transform: 'scale(1.4)'
+                      objectPosition: 'center 32%',
+                      transform: 'scale(1.8)',
+                      imageRendering: 'crisp-edges'
                     }}
                     onError={(e) => {
                       e.currentTarget.src = '/images/payment-qr/gcash-qr-code.png';
