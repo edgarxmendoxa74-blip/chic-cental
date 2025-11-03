@@ -3,7 +3,7 @@ import { Plus, Edit, Trash2, Save, X, ArrowLeft, Coffee, TrendingUp, Package, Us
 import { MenuItem, Variation, AddOn } from '../types';
 import { addOnCategories } from '../data/menuData';
 import { useMenu } from '../hooks/useMenu';
-import { useCategories, Category } from '../hooks/useCategories';
+import { useCategories } from '../hooks/useCategories';
 import ImageUpload from './ImageUpload';
 import CategoryManager from './CategoryManager';
 import PaymentMethodManager from './PaymentMethodManager';
@@ -68,21 +68,58 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleSaveItem = async () => {
+    // Validation
     if (!formData.name || !formData.description || !formData.basePrice) {
-      alert('Please fill in all required fields');
+      alert('❌ Please fill in all required fields:\n- Item Name\n- Description\n- Base Price');
       return;
     }
 
+    if (formData.basePrice <= 0) {
+      alert('❌ Base price must be greater than 0');
+      return;
+    }
+
+    // Validate discount pricing if enabled
+    if (formData.discountActive) {
+      if (!formData.discountPrice || formData.discountPrice <= 0) {
+        alert('❌ Please enter a valid discount price when discount is enabled');
+        return;
+      }
+      if (formData.discountPrice >= formData.basePrice) {
+        alert('❌ Discount price must be less than base price');
+        return;
+      }
+    }
+
     try {
+      setIsProcessing(true);
+      
       if (editingItem) {
         await updateMenuItem(editingItem.id, formData);
+        alert(`✅ Successfully updated "${formData.name}"!`);
       } else {
         await addMenuItem(formData as Omit<MenuItem, 'id'>);
+        alert(`✅ Successfully added "${formData.name}" to the menu!`);
       }
+      
+      // Reset form and navigate back
       setCurrentView('items');
       setEditingItem(null);
+      setFormData({
+        name: '',
+        description: '',
+        basePrice: 0,
+        category: 'hot-coffee',
+        popular: false,
+        available: true,
+        variations: [],
+        addOns: []
+      });
     } catch (error) {
-      alert('Failed to save item');
+      console.error('Save error:', error);
+      alert(`❌ Failed to save item. Error: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease check your connection and try again.`);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -254,11 +291,11 @@ const AdminDashboard: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
+            <div className="mx-auto w-16 h-16 bg-chick-gradient rounded-full flex items-center justify-center mb-4 shadow-lg">
               <Lock className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl font-playfair font-semibold text-black">Admin Access</h1>
-            <p className="text-gray-600 mt-2">Enter password to access the admin dashboard</p>
+            <h1 className="text-2xl font-bold text-chick-dark">🐔 Admin Access</h1>
+            <p className="text-chick-brown mt-2">Enter password to access the admin dashboard</p>
           </div>
           
           <form onSubmit={handleLogin}>
@@ -279,9 +316,9 @@ const AdminDashboard: React.FC = () => {
             
             <button
               type="submit"
-              className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium"
+              className="w-full bg-chick-gradient text-white py-3 rounded-xl hover:shadow-xl transition-all duration-200 font-bold"
             >
-              Access Dashboard
+              🔓 Access Dashboard
             </button>
           </form>
         </div>
@@ -322,17 +359,28 @@ const AdminDashboard: React.FC = () => {
               <div className="flex space-x-3">
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2"
+                  disabled={isProcessing}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <X className="h-4 w-4" />
                   <span>Cancel</span>
                 </button>
                 <button
                   onClick={handleSaveItem}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center space-x-2"
+                  disabled={isProcessing}
+                  className="px-6 py-2 bg-chick-gradient text-white rounded-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Save className="h-4 w-4" />
-                  <span>Save</span>
+                  {isProcessing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4" />
+                      <span>💾 Save Changes</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -340,6 +388,17 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="max-w-4xl mx-auto px-4 py-8">
+          {/* Processing Indicator */}
+          {isProcessing && (
+            <div className="bg-chick-beige border-l-4 border-chick-golden rounded-lg p-4 mb-6 flex items-center space-x-3 shadow-lg">
+              <div className="animate-spin rounded-full h-5 w-5 border-2 border-chick-orange border-t-transparent"></div>
+              <div>
+                <p className="font-bold text-chick-dark">Saving changes...</p>
+                <p className="text-sm text-chick-brown">Please wait while we update your menu item.</p>
+              </div>
+            </div>
+          )}
+
           <div className="bg-white rounded-xl shadow-sm p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div>
@@ -383,7 +442,7 @@ const AdminDashboard: React.FC = () => {
                     type="checkbox"
                     checked={formData.popular || false}
                     onChange={(e) => setFormData({ ...formData, popular: e.target.checked })}
-                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    className="rounded border-gray-300 text-chick-orange focus:ring-chick-golden"
                   />
                   <span className="text-sm font-medium text-black">Mark as Popular</span>
                 </label>
@@ -395,7 +454,7 @@ const AdminDashboard: React.FC = () => {
                     type="checkbox"
                     checked={formData.available ?? true}
                     onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
-                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    className="rounded border-gray-300 text-chick-orange focus:ring-chick-golden"
                   />
                   <span className="text-sm font-medium text-black">Available for Order</span>
                 </label>
@@ -423,7 +482,7 @@ const AdminDashboard: React.FC = () => {
                       type="checkbox"
                       checked={formData.discountActive || false}
                       onChange={(e) => setFormData({ ...formData, discountActive: e.target.checked })}
-                      className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      className="rounded border-gray-300 text-chick-orange focus:ring-chick-golden"
                     />
                     <span className="text-sm font-medium text-black">Enable Discount</span>
                   </label>
@@ -459,7 +518,7 @@ const AdminDashboard: React.FC = () => {
               <textarea
                 value={formData.description || ''}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-chick-orange focus:border-transparent"
                 placeholder="Enter item description"
                 rows={3}
               />
@@ -475,7 +534,7 @@ const AdminDashboard: React.FC = () => {
             {/* Variations Section */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-playfair font-medium text-black">Size Variations</h3>
+                <h3 className="text-lg font-playfair font-medium text-black">Flavor Variations</h3>
                 <button
                   onClick={addVariation}
                   className="flex items-center space-x-2 px-3 py-2 bg-cream-100 text-black rounded-lg hover:bg-cream-200 transition-colors duration-200"
@@ -486,27 +545,39 @@ const AdminDashboard: React.FC = () => {
               </div>
 
               {formData.variations?.map((variation, index) => (
-                <div key={variation.id} className="flex items-center space-x-3 mb-3 p-4 bg-gray-50 rounded-lg">
-                  <input
-                    type="text"
-                    value={variation.name}
-                    onChange={(e) => updateVariation(index, 'name', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Variation name (e.g., Small, Medium, Large)"
-                  />
-                  <input
-                    type="number"
-                    value={variation.price}
-                    onChange={(e) => updateVariation(index, 'price', Number(e.target.value))}
-                    className="w-24 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Price"
-                  />
-                  <button
-                    onClick={() => removeVariation(index)}
-                    className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors duration-200"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                <div key={variation.id} className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <input
+                      type="text"
+                      value={variation.name}
+                      onChange={(e) => updateVariation(index, 'name', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-chick-orange focus:border-transparent"
+                      placeholder="Flavor name (e.g., Buffalo Blaze, Soy Garlic Glaze)"
+                    />
+                    <input
+                      type="number"
+                      value={variation.price}
+                      onChange={(e) => updateVariation(index, 'price', Number(e.target.value))}
+                      className="w-32 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-chick-orange focus:border-transparent"
+                      placeholder="Price"
+                    />
+                    <button
+                      onClick={() => removeVariation(index)}
+                      className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors duration-200"
+                      title="Remove flavor"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  
+                  {/* Simple Image Upload - Like Menu Item Image */}
+                  <div className="mt-3">
+                    <ImageUpload
+                      currentImage={variation.image || ''}
+                      onImageChange={(imageUrl) => updateVariation(index, 'image', imageUrl || '')}
+                      className="mb-0"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -530,13 +601,13 @@ const AdminDashboard: React.FC = () => {
                     type="text"
                     value={addOn.name}
                     onChange={(e) => updateAddOn(index, 'name', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-chick-orange focus:border-transparent"
                     placeholder="Add-on name"
                   />
                   <select
                     value={addOn.category}
                     onChange={(e) => updateAddOn(index, 'category', e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-chick-orange focus:border-transparent"
                   >
                     {addOnCategories.map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -546,7 +617,7 @@ const AdminDashboard: React.FC = () => {
                     type="number"
                     value={addOn.price}
                     onChange={(e) => updateAddOn(index, 'price', Number(e.target.value))}
-                    className="w-24 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-24 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-chick-orange focus:border-transparent"
                     placeholder="Price"
                   />
                   <button
@@ -597,7 +668,7 @@ const AdminDashboard: React.FC = () => {
                 )}
                 <button
                   onClick={handleAddItem}
-                  className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200"
+                  className="flex items-center space-x-2 bg-chick-gradient text-white px-4 py-2 rounded-lg hover:shadow-xl transition-all duration-200 font-bold"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Add New Item</span>
@@ -675,7 +746,7 @@ const AdminDashboard: React.FC = () => {
                         type="checkbox"
                         checked={selectedItems.length === menuItems.length && menuItems.length > 0}
                         onChange={handleSelectAll}
-                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        className="rounded border-gray-300 text-chick-orange focus:ring-chick-golden"
                       />
                       <span className="text-sm font-medium text-gray-700">
                         Select All ({menuItems.length} items)
@@ -757,8 +828,8 @@ const AdminDashboard: React.FC = () => {
                       <td className="px-6 py-4">
                         <div className="flex flex-col space-y-1">
                           {item.popular && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-600 text-white">
-                              Popular
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-chick-gradient text-white shadow-md">
+                              ⭐ Popular
                             </span>
                           )}
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -804,7 +875,7 @@ const AdminDashboard: React.FC = () => {
                         type="checkbox"
                         checked={selectedItems.includes(item.id)}
                         onChange={() => handleSelectItem(item.id)}
-                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        className="rounded border-gray-300 text-chick-orange focus:ring-chick-golden"
                       />
                       <span className="text-sm text-gray-600">Select</span>
                     </label>
@@ -866,8 +937,8 @@ const AdminDashboard: React.FC = () => {
                   <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center space-x-2">
                       {item.popular && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-600 text-white">
-                          Popular
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-chick-gradient text-white shadow-md">
+                          ⭐ Popular
                         </span>
                       )}
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -933,8 +1004,8 @@ const AdminDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <Coffee className="h-8 w-8 text-black" />
-              <h1 className="text-2xl font-noto font-semibold text-black">ClickEats Admin</h1>
+              <div className="text-3xl">🐔</div>
+              <h1 className="text-2xl font-bold text-chick-dark">Chick Central Admin</h1>
             </div>
             <div className="flex items-center space-x-4">
               <a
@@ -957,50 +1028,50 @@ const AdminDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-chick-beige">
             <div className="flex items-center">
-              <div className="p-2 bg-green-600 rounded-lg">
+              <div className="p-3 bg-chick-gradient rounded-lg shadow-md">
                 <Package className="h-6 w-6 text-white" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Items</p>
-                <p className="text-2xl font-semibold text-gray-900">{totalItems}</p>
+                <p className="text-sm font-medium text-chick-brown">Total Items</p>
+                <p className="text-2xl font-bold text-chick-dark">{totalItems}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-chick-beige">
             <div className="flex items-center">
-              <div className="p-2 bg-green-500 rounded-lg">
+              <div className="p-3 bg-gradient-to-br from-chick-golden to-chick-orange rounded-lg shadow-md">
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Available Items</p>
-                <p className="text-2xl font-semibold text-gray-900">{availableItems}</p>
+                <p className="text-sm font-medium text-chick-brown">Available Items</p>
+                <p className="text-2xl font-bold text-chick-dark">{availableItems}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-chick-beige">
             <div className="flex items-center">
-              <div className="p-2 bg-cream-500 rounded-lg">
+              <div className="p-3 bg-gradient-to-br from-chick-orange to-chick-red rounded-lg shadow-md">
                 <Coffee className="h-6 w-6 text-white" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Popular Items</p>
-                <p className="text-2xl font-semibold text-gray-900">{popularItems}</p>
+                <p className="text-sm font-medium text-chick-brown">Popular Items</p>
+                <p className="text-2xl font-bold text-chick-dark">{popularItems}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-chick-beige">
             <div className="flex items-center">
-              <div className="p-2 bg-green-500 rounded-lg">
+              <div className="p-3 bg-gradient-to-br from-chick-sage to-chick-brown rounded-lg shadow-md">
                 <Users className="h-6 w-6 text-white" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active</p>
-                <p className="text-2xl font-semibold text-gray-900">Online</p>
+                <p className="text-sm font-medium text-chick-brown">Status</p>
+                <p className="text-2xl font-bold text-chick-dark">Online</p>
               </div>
             </div>
           </div>
@@ -1063,6 +1134,102 @@ const AdminDashboard: React.FC = () => {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* All Menu Items Preview */}
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h3 className="text-lg font-playfair font-medium text-black">All Menu Items ({totalItems})</h3>
+            <button
+              onClick={() => setCurrentView('items')}
+              className="text-sm text-chick-orange hover:text-chick-red transition-colors duration-200 font-medium"
+            >
+              View All →
+            </button>
+          </div>
+          
+          <div className="divide-y divide-gray-200">
+            {menuItems.map((item) => {
+              const itemCategory = categories.find(cat => cat.id === item.category);
+              return (
+                <div key={item.id} className="px-6 py-4 hover:bg-gray-50 transition-colors duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-lg">{itemCategory?.icon || '🍽️'}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2">
+                            <h4 className="font-medium text-gray-900">{item.name}</h4>
+                            {item.popular && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-chick-gradient text-white">
+                                ⭐ Popular
+                              </span>
+                            )}
+                            {!item.available && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                Unavailable
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-500 truncate">{item.description}</p>
+                          <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
+                            <span>Category: {itemCategory?.name}</span>
+                            <span>•</span>
+                            <span>{item.variations?.length || 0} variations</span>
+                            <span>•</span>
+                            <span>{item.addOns?.length || 0} add-ons</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="ml-4 flex items-center space-x-4">
+                      <div className="text-right">
+                        {item.isOnDiscount && item.discountPrice ? (
+                          <div className="flex flex-col">
+                            <span className="text-lg font-bold text-red-600">₱{item.discountPrice}</span>
+                            <span className="text-sm text-gray-500 line-through">₱{item.basePrice}</span>
+                          </div>
+                        ) : (
+                          <span className="text-lg font-bold text-gray-900">₱{item.basePrice}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleEditItem(item)}
+                          className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors duration-200"
+                          title="Edit item"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteItem(item.id)}
+                          className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors duration-200"
+                          title="Delete item"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          {menuItems.length === 0 && (
+            <div className="px-6 py-12 text-center">
+              <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No menu items yet</h3>
+              <p className="text-gray-500 mb-4">Get started by adding your first menu item</p>
+              <button
+                onClick={handleAddItem}
+                className="inline-flex items-center space-x-2 bg-chick-gradient text-white px-4 py-2 rounded-lg hover:shadow-xl transition-all duration-200 font-bold"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add Menu Item</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

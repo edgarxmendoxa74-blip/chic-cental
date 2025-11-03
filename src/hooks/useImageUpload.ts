@@ -50,6 +50,20 @@ export const useImageUpload = () => {
       setUploadProgress(100);
 
       if (error) {
+        // Provide helpful error message for bucket not found
+        if (error.message.includes('Bucket not found') || error.message.includes('bucket')) {
+          throw new Error(
+            '❌ Storage bucket "menu-images" not found!\n\n' +
+            '📋 Setup Instructions:\n' +
+            '1. Go to your Supabase Dashboard\n' +
+            '2. Navigate to Storage section\n' +
+            '3. Click "New Bucket"\n' +
+            '4. Name it: menu-images\n' +
+            '5. Make it PUBLIC\n' +
+            '6. Save and try uploading again\n\n' +
+            'OR use the SQL command in the browser console for quick setup.'
+          );
+        }
         throw error;
       }
 

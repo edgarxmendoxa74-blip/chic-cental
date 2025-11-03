@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Upload, X } from 'lucide-react';
+import { Save, Upload, X, Loader } from 'lucide-react';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 import { useImageUpload } from '../hooks/useImageUpload';
 
@@ -7,6 +7,7 @@ const SiteSettingsManager: React.FC = () => {
   const { siteSettings, loading, updateSiteSettings } = useSiteSettings();
   const { uploadImage, uploading } = useImageUpload();
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     site_name: '',
     site_description: '',
@@ -49,16 +50,27 @@ const SiteSettingsManager: React.FC = () => {
   };
 
   const handleSave = async () => {
+    setIsSaving(true);
     try {
       let logoUrl = logoPreview;
       
       // Upload new logo if selected
       if (logoFile) {
-        const uploadedUrl = await uploadImage(logoFile, 'site-logo');
-        logoUrl = uploadedUrl;
+        try {
+          console.log('Uploading logo...');
+          const uploadedUrl = await uploadImage(logoFile);
+          logoUrl = uploadedUrl;
+          console.log('Logo uploaded successfully:', uploadedUrl);
+        } catch (uploadError) {
+          console.error('Logo upload error:', uploadError);
+          alert(`❌ Failed to upload logo: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}\n\nPlease try again or use a different image.`);
+          setIsSaving(false);
+          return; // Don't proceed if logo upload fails
+        }
       }
 
       // Update all settings
+      console.log('Updating settings...');
       await updateSiteSettings({
         site_name: formData.site_name,
         site_description: formData.site_description,
@@ -67,10 +79,19 @@ const SiteSettingsManager: React.FC = () => {
         site_logo: logoUrl
       });
 
+      alert('✅ Site settings saved successfully! The changes will appear after page refresh.');
       setIsEditing(false);
       setLogoFile(null);
+      
+      // Refresh page to show updated logo
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error('Error saving site settings:', error);
+      alert(`❌ Failed to save settings: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease try again.`);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -104,13 +125,26 @@ const SiteSettingsManager: React.FC = () => {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
+    <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-chick-beige">
+      {/* Saving Indicator */}
+      {isSaving && (
+        <div className="bg-chick-beige border-l-4 border-chick-golden rounded-lg p-4 mb-6 flex items-center space-x-3 shadow-lg">
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-chick-orange border-t-transparent"></div>
+          <div>
+            <p className="font-bold text-chick-dark">
+              {uploading ? 'Uploading logo...' : 'Saving settings...'}
+            </p>
+            <p className="text-sm text-chick-brown">Please wait while we update your settings.</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-noto font-semibold text-black">Site Settings</h2>
+        <h2 className="text-2xl font-bold text-chick-dark">⚙️ Site Settings</h2>
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center space-x-2"
+            className="bg-chick-gradient text-white px-6 py-2 rounded-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 font-bold"
           >
             <Save className="h-4 w-4" />
             <span>Edit Settings</span>
@@ -119,18 +153,28 @@ const SiteSettingsManager: React.FC = () => {
           <div className="flex space-x-2">
             <button
               onClick={handleCancel}
-              className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors duration-200 flex items-center space-x-2"
+              disabled={isSaving}
+              className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <X className="h-4 w-4" />
               <span>Cancel</span>
             </button>
             <button
               onClick={handleSave}
-              disabled={uploading}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center space-x-2 disabled:opacity-50"
+              disabled={isSaving || uploading}
+              className="bg-chick-gradient text-white px-6 py-2 rounded-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Save className="h-4 w-4" />
-              <span>{uploading ? 'Saving...' : 'Save Changes'}</span>
+              {isSaving || uploading ? (
+                <>
+                  <Loader className="h-4 w-4 animate-spin" />
+                  <span>{uploading ? 'Uploading...' : 'Saving...'}</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  <span>💾 Save Changes</span>
+                </>
+              )}
             </button>
           </div>
         )}
@@ -139,39 +183,58 @@ const SiteSettingsManager: React.FC = () => {
       <div className="space-y-6">
         {/* Site Logo */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Site Logo
+          <label className="block text-sm font-medium text-chick-dark mb-2">
+            🐔 Site Logo
           </label>
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+            <div className="w-20 h-20 rounded-full overflow-hidden bg-chick-beige flex items-center justify-center ring-2 ring-chick-golden shadow-md">
               {logoPreview ? (
                 <img
                   src={logoPreview}
                   alt="Site Logo"
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               ) : (
-                <div className="text-2xl text-gray-400">☕</div>
+                <div className="text-3xl text-chick-brown">🐔</div>
               )}
             </div>
-            {isEditing && (
-              <div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoChange}
-                  className="hidden"
-                  id="logo-upload"
-                />
-                <label
-                  htmlFor="logo-upload"
-                  className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 flex items-center space-x-2 cursor-pointer"
-                >
-                  <Upload className="h-4 w-4" />
-                  <span>Upload Logo</span>
-                </label>
-              </div>
-            )}
+            <div className="flex-1">
+              {isEditing && (
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    className="hidden"
+                    id="logo-upload"
+                    disabled={isSaving || uploading}
+                  />
+                  <label
+                    htmlFor="logo-upload"
+                    className={`bg-chick-beige text-chick-dark px-4 py-2 rounded-lg hover:bg-chick-golden transition-colors duration-200 flex items-center space-x-2 cursor-pointer border-2 border-chick-golden font-semibold ${
+                      isSaving || uploading ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    <Upload className="h-4 w-4" />
+                    <span>{uploading ? 'Uploading...' : 'Upload New Logo'}</span>
+                  </label>
+                  <p className="text-xs text-chick-brown mt-2">
+                    Supported: JPG, PNG, WebP, GIF (Max 5MB)
+                  </p>
+                  {logoFile && (
+                    <p className="text-xs text-chick-orange mt-1 font-semibold">
+                      ✓ New logo selected: {logoFile.name}
+                    </p>
+                  )}
+                </div>
+              )}
+              {!isEditing && (
+                <p className="text-sm text-gray-600">Current logo displayed above</p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -186,7 +249,7 @@ const SiteSettingsManager: React.FC = () => {
               name="site_name"
               value={formData.site_name}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-chick-orange focus:border-chick-orange"
               placeholder="Enter site name"
             />
           ) : (
@@ -205,7 +268,7 @@ const SiteSettingsManager: React.FC = () => {
               value={formData.site_description}
               onChange={handleInputChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-chick-orange focus:border-chick-orange"
               placeholder="Enter site description"
             />
           ) : (
@@ -225,7 +288,7 @@ const SiteSettingsManager: React.FC = () => {
                 name="currency"
                 value={formData.currency}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-chick-orange focus:border-chick-orange"
                 placeholder="e.g., ₱, $, €"
               />
             ) : (
@@ -242,7 +305,7 @@ const SiteSettingsManager: React.FC = () => {
                 name="currency_code"
                 value={formData.currency_code}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-chick-orange focus:border-chick-orange"
                 placeholder="e.g., PHP, USD, EUR"
               />
             ) : (

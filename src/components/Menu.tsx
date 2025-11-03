@@ -92,11 +92,12 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
         onCategoryClick={handleCategoryClick}
       />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-noto font-semibold text-black mb-4">Our Menu</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Discover our selection of authentic dim sum, flavorful noodles, and traditional Asian dishes, 
-          all prepared with fresh ingredients and authentic techniques.
+      <div className="text-center mb-12 bg-chick-gradient rounded-2xl shadow-2xl py-8 px-6">
+        <h2 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
+          🍗 Chick Central
+        </h2>
+        <p className="text-xl md:text-2xl text-white font-semibold drop-shadow-md">
+          Flavored wings that hit different! 🔥
         </p>
       </div>
 

@@ -2,14 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Ramen Yard Custom Styles */
-/* Minimal helpers for ramen palette when needed outside tailwind tokens */
-.bg-ramen-cream { background-color: #FFF3E0; }
-.bg-ramen-beige { background-color: #F7E7CE; }
-.text-ramen-red { color: #D7263D; }
-.text-ramen-dark { color: #0B0A0A; }
-.border-ramen-sesame { border-color: #D1C7B7; }
-.ring-ramen-gold { --tw-ring-color: #E0A106; }
+/* Chick Central Custom Styles */
+/* Vibrant chicken-themed color palette */
+.bg-chick-yellow { background-color: #FDB813; }
+.bg-chick-golden { background-color: #F5A623; }
+.bg-chick-cream { background-color: #FFF8E7; }
+.bg-chick-beige { background-color: #F4E4C1; }
+.bg-chick-orange { background-color: #FF6B35; }
+
+.text-chick-yellow { color: #FDB813; }
+.text-chick-golden { color: #F5A623; }
+.text-chick-orange { color: #FF6B35; }
+.text-chick-red { color: #E63946; }
+.text-chick-dark { color: #2D1B00; }
+.text-chick-brown { color: #8B4513; }
+
+.border-chick-yellow { border-color: #FDB813; }
+.border-chick-golden { border-color: #F5A623; }
+.border-chick-beige { border-color: #F4E4C1; }
+
+.ring-chick-golden { --tw-ring-color: #F5A623; }
+
+/* Gradient backgrounds for modern look */
+.bg-chick-gradient {
+  background: linear-gradient(135deg, #FDB813 0%, #F5A623 50%, #FF9F1C 100%);
+}
+
+.bg-chick-warm-gradient {
+  background: linear-gradient(to bottom, #FFF8E7 0%, #F4E4C1 100%);
+}
+
+/* Green Cart Colors */
+.bg-cart-green {
+  background-color: #10B981;
+}
+
+.bg-cart-green-dark {
+  background-color: #059669;
+}
+
+.bg-cart-gradient {
+  background: linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%);
+}
+
+.text-cart-green {
+  color: #10B981;
+}
+
+.border-cart-green {
+  border-color: #10B981;
+}
+
+.hover\:bg-cart-green:hover {
+  background-color: #10B981;
+}
+
+.hover\:shadow-cart-green:hover {
+  box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.3), 0 10px 10px -5px rgba(16, 185, 129, 0.2);
+}
 
 /* Hide scrollbar for mobile nav */
 .scrollbar-hide {

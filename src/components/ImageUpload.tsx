@@ -14,18 +14,26 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   className = '' 
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { uploadImage, deleteImage, uploading, uploadProgress } = useImageUpload();
+  const { deleteImage } = useImageUpload();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    try {
-      const imageUrl = await uploadImage(file);
-      onImageChange(imageUrl);
-    } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to upload image');
-    }
+    setIsLoading(true);
+
+    // Use Base64 encoding for immediate preview (works without server)
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      onImageChange(reader.result as string);
+      setIsLoading(false);
+    };
+    reader.onerror = () => {
+      alert('Failed to read image file');
+      setIsLoading(false);
+    };
+    reader.readAsDataURL(file);
 
     // Reset file input
     if (fileInputRef.current) {
@@ -74,7 +82,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             type="button"
             onClick={handleRemoveImage}
             className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200"
-            disabled={uploading}
+            disabled={isLoading}
           >
             <X className="h-4 w-4" />
           </button>
@@ -82,24 +90,18 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       ) : (
         <div
           onClick={triggerFileSelect}
-          className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+          className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-chick-orange hover:bg-chick-beige transition-all duration-200"
         >
-          {uploading ? (
+          {isLoading ? (
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-2"></div>
-              <p className="text-sm text-gray-600">Uploading... {uploadProgress}%</p>
-              <div className="w-32 bg-gray-200 rounded-full h-2 mt-2">
-                <div 
-                  className="bg-black h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chick-orange mx-auto mb-2"></div>
+              <p className="text-sm text-gray-600">Loading image...</p>
             </div>
           ) : (
             <>
               <ImageIcon className="h-12 w-12 text-gray-400 mb-2" />
-              <p className="text-sm text-gray-600 mb-1">Click to upload image</p>
-              <p className="text-xs text-gray-500">JPEG, PNG, WebP, GIF (max 5MB)</p>
+              <p className="text-sm text-gray-600 mb-1 font-medium">📁 Click to upload image</p>
+              <p className="text-xs text-gray-500">All formats & quality accepted</p>
             </>
           )}
         </div>
@@ -108,10 +110,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
+        accept="image/*"
         onChange={handleFileSelect}
         className="hidden"
-        disabled={uploading}
+        disabled={isLoading}
       />
 
       {!currentImage && (
@@ -119,27 +121,50 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           <button
             type="button"
             onClick={triggerFileSelect}
-            disabled={uploading}
-            className="flex items-center space-x-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+            className="flex items-center space-x-2 px-4 py-2 bg-chick-gradient text-white rounded-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             <Upload className="h-4 w-4" />
-            <span>Upload Image</span>
+            <span>📁 Upload Image</span>
           </button>
           <span className="text-sm text-gray-500">or enter URL below</span>
         </div>
       )}
 
+      {/* OR Divider */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1 border-t border-gray-300"></div>
+        <span className="text-xs text-gray-500 font-medium">OR</span>
+        <div className="flex-1 border-t border-gray-300"></div>
+      </div>
+
       {/* URL Input as fallback */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Or enter image URL</label>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Enter Image URL</label>
         <input
-          type="url"
+          type="text"
           value={currentImage || ''}
           onChange={(e) => onImageChange(e.target.value || undefined)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-          placeholder="https://example.com/image.jpg"
-          disabled={uploading}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-chick-orange focus:border-transparent"
+          placeholder="/images/chick-central-logo.jpg or https://..."
+          disabled={isLoading}
         />
+        
+        {/* Quick Path Helper */}
+        <button
+          type="button"
+          onClick={() => onImageChange('/images/chick-central-logo.jpg')}
+          className="text-xs px-3 py-1.5 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 transition-colors"
+        >
+          🐔 Use Chick Central Logo
+        </button>
+        
+        <p className="text-xs text-gray-500">
+          💡 <strong>Supports:</strong> All image formats • Any quality/size • Upload file or enter URL
+        </p>
+        <p className="text-xs text-gray-400">
+          ✨ Low quality images are welcome! Upload any image you have.
+        </p>
       </div>
     </div>
   );
