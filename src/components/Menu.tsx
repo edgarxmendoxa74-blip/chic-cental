@@ -112,6 +112,93 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
         </div>
       </div>
 
+      {/* How to Order Section */}
+      <div className="mb-12 bg-white rounded-2xl shadow-xl p-8 border-2 border-chick-golden">
+        <h3 className="text-3xl font-bold text-chick-dark text-center mb-8">
+          📱 How to Order
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* Step 1 */}
+          <div className="text-center">
+            <div className="w-16 h-16 bg-chick-gradient rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <span className="text-3xl">🍗</span>
+            </div>
+            <div className="bg-chick-orange text-white text-sm font-bold rounded-full px-4 py-1 inline-block mb-3">
+              STEP 1
+            </div>
+            <h4 className="font-bold text-chick-dark mb-2">Browse Menu</h4>
+            <p className="text-sm text-gray-600">
+              Scroll through our delicious menu items and choose your favorites
+            </p>
+          </div>
+
+          {/* Step 2 */}
+          <div className="text-center">
+            <div className="w-16 h-16 bg-chick-gradient rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <span className="text-3xl">🛒</span>
+            </div>
+            <div className="bg-chick-orange text-white text-sm font-bold rounded-full px-4 py-1 inline-block mb-3">
+              STEP 2
+            </div>
+            <h4 className="font-bold text-chick-dark mb-2">Add to Cart</h4>
+            <p className="text-sm text-gray-600">
+              Select your flavor, add-ons, and quantity, then click "Add to Cart"
+            </p>
+          </div>
+
+          {/* Step 3 */}
+          <div className="text-center">
+            <div className="w-16 h-16 bg-chick-gradient rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <span className="text-3xl">📝</span>
+            </div>
+            <div className="bg-chick-orange text-white text-sm font-bold rounded-full px-4 py-1 inline-block mb-3">
+              STEP 3
+            </div>
+            <h4 className="font-bold text-chick-dark mb-2">Fill Details</h4>
+            <p className="text-sm text-gray-600">
+              Choose Dine-in, Pickup, or Delivery and enter your information
+            </p>
+          </div>
+
+          {/* Step 4 */}
+          <div className="text-center">
+            <div className="w-16 h-16 bg-cart-gradient rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <span className="text-3xl">✅</span>
+            </div>
+            <div className="bg-green-600 text-white text-sm font-bold rounded-full px-4 py-1 inline-block mb-3">
+              STEP 4
+            </div>
+            <h4 className="font-bold text-chick-dark mb-2">Place Order</h4>
+            <p className="text-sm text-gray-600">
+              Review your order and send it via Messenger to complete!
+            </p>
+          </div>
+        </div>
+
+        {/* Additional Info */}
+        <div className="mt-8 pt-6 border-t-2 border-chick-beige">
+          <div className="flex flex-wrap justify-center gap-4 text-sm">
+            <div className="flex items-center space-x-2 bg-chick-beige px-4 py-2 rounded-full">
+              <span>🪑</span>
+              <span className="font-semibold">Dine-in Available</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-chick-beige px-4 py-2 rounded-full">
+              <span>🥡</span>
+              <span className="font-semibold">Quick Pickup</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-chick-beige px-4 py-2 rounded-full">
+              <span>🚚</span>
+              <span className="font-semibold">Fast Delivery</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-chick-beige px-4 py-2 rounded-full">
+              <span>💳</span>
+              <span className="font-semibold">GCash Payment</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {categories.map((category) => {
         const categoryItems = menuItems.filter(item => item.category === category.id);
         
