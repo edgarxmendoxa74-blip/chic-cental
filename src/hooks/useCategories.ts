@@ -28,7 +28,12 @@ export const useCategories = () => {
 
       if (fetchError) throw fetchError;
 
-      setCategories(data || []);
+      // Remove duplicates by id (in case database has duplicates)
+      const uniqueCategories = (data || []).filter((category, index, self) =>
+        index === self.findIndex((c) => c.id === category.id)
+      );
+
+      setCategories(uniqueCategories);
       setError(null);
     } catch (err) {
       console.error('Error fetching categories:', err);

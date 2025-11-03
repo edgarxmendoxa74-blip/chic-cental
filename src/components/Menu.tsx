@@ -218,7 +218,8 @@ const Menu: React.FC<MenuProps> = ({ menuItems, addToCart, cartItems, updateQuan
         
         return (
           <section key={category.id} id={category.id} className="mb-16">
-            <div className="flex items-center mb-8">
+            {/* Hide category headers on mobile since they're in the sticky nav */}
+            <div className="hidden md:flex items-center mb-8">
               <span className="text-3xl mr-3">{category.icon}</span>
               <h3 className="text-3xl font-noto font-medium text-black">{category.name}</h3>
             </div>
