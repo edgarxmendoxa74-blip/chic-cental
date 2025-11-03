@@ -76,9 +76,11 @@ const Cart: React.FC<CartProps> = ({
 
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-bold text-chick-dark mb-1">{item.name}</h3>
-                  {item.selectedVariation && (
+                  {item.selectedVariations && item.selectedVariations.length > 0 ? (
+                    <p className="text-sm text-chick-brown mb-1">Flavors: {item.selectedVariations.map(v => v.name).join(' + ')}</p>
+                  ) : item.selectedVariation ? (
                     <p className="text-sm text-chick-brown mb-1">Flavor: {item.selectedVariation.name}</p>
-                  )}
+                  ) : null}
                   {item.selectedAddOns && item.selectedAddOns.length > 0 && (
                     <p className="text-sm text-chick-brown mb-1">
                       ➕ Add-ons: {item.selectedAddOns.map(addOn => 

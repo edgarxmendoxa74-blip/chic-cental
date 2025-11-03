@@ -4,7 +4,7 @@ import { MenuItem, Variation, AddOn } from '../types';
 
 interface MenuItemCardProps {
   item: MenuItem;
-  onAddToCart: (item: MenuItem, quantity?: number, variation?: Variation, addOns?: AddOn[]) => void;
+  onAddToCart: (item: MenuItem, quantity?: number, variation?: Variation, addOns?: AddOn[], variations?: Variation[]) => void;
   quantity: number;
   onUpdateQuantity: (id: string, quantity: number) => void;
 }
@@ -19,18 +19,52 @@ const MenuItemCard: React.FC<MenuItemCardProps> = React.memo(({
   const [selectedVariation, setSelectedVariation] = useState<Variation | undefined>(
     item.variations?.[0]
   );
+  const [selectedVariations, setSelectedVariations] = useState<Variation[]>([]);
   const [selectedAddOns, setSelectedAddOns] = useState<(AddOn & { quantity: number })[]>([]);
+  
+  // Detect how many flavors can be picked from description
+  const detectMaxFlavors = (description: string): number => {
+    const lowerDesc = description.toLowerCase();
+    // Match patterns like "pick 2 flavors", "choose 2 flavors", "2 flavors"
+    const match = lowerDesc.match(/(?:pick|choose|select)?\s*(\d+)\s*flavors?/);
+    if (match) {
+      return parseInt(match[1]);
+    }
+    return 1; // Default to 1 flavor
+  };
+  
+  const maxFlavors = item.maxFlavors || detectMaxFlavors(item.description);
 
   const calculatePrice = () => {
     // Use effective price (discounted or regular) as base
     let price = item.effectivePrice || item.basePrice;
-    if (selectedVariation) {
+    
+    // For multiple flavors, use the highest priced variation
+    if (maxFlavors > 1 && selectedVariations.length > 0) {
+      const maxVariationPrice = Math.max(...selectedVariations.map(v => v.price));
+      price = (item.effectivePrice || item.basePrice) + maxVariationPrice;
+    } else if (selectedVariation) {
       price = (item.effectivePrice || item.basePrice) + selectedVariation.price;
     }
+    
     selectedAddOns.forEach(addOn => {
       price += addOn.price * addOn.quantity;
     });
     return price;
+  };
+  
+  const toggleVariationSelection = (variation: Variation) => {
+    setSelectedVariations(prev => {
+      const isSelected = prev.find(v => v.id === variation.id);
+      if (isSelected) {
+        // Remove if already selected
+        return prev.filter(v => v.id !== variation.id);
+      } else if (prev.length < maxFlavors) {
+        // Add if under limit
+        return [...prev, variation];
+      }
+      return prev; // At limit, don't add
+    });
   };
 
   const handleAddToCart = () => {
@@ -46,9 +80,17 @@ const MenuItemCard: React.FC<MenuItemCardProps> = React.memo(({
     const addOnsForCart: AddOn[] = selectedAddOns.flatMap(addOn => 
       Array(addOn.quantity).fill({ ...addOn, quantity: undefined })
     );
-    onAddToCart(item, 1, selectedVariation, addOnsForCart);
+    
+    // Pass multiple flavors if selected, otherwise single flavor
+    if (maxFlavors > 1 && selectedVariations.length > 0) {
+      onAddToCart(item, 1, selectedVariations[0], addOnsForCart, selectedVariations);
+    } else {
+      onAddToCart(item, 1, selectedVariation, addOnsForCart);
+    }
+    
     setShowCustomization(false);
     setSelectedAddOns([]);
+    setSelectedVariations([]);
   };
 
   const handleIncrement = () => {
@@ -259,31 +301,51 @@ const MenuItemCard: React.FC<MenuItemCardProps> = React.memo(({
               {/* Flavor Variations */}
               {item.variations && item.variations.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-4">Choose Flavor</h4>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-semibold text-gray-900">
+                      {maxFlavors > 1 ? `Pick ${maxFlavors} Flavors` : 'Choose Flavor'}
+                    </h4>
+                    {maxFlavors > 1 && (
+                      <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                        {selectedVariations.length}/{maxFlavors} selected
+                      </span>
+                    )}
+                  </div>
+                  
                   <div className="grid grid-cols-2 gap-3">
                     {item.variations.map((variation) => {
+                      const isSelected = maxFlavors > 1 
+                        ? selectedVariations.find(v => v.id === variation.id)
+                        : selectedVariation?.id === variation.id;
+                      
                       return (
                         <label
                           key={variation.id}
                           className={`flex items-center space-x-3 p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                            selectedVariation?.id === variation.id
+                            isSelected
                               ? 'border-chick-orange bg-chick-beige shadow-md'
                               : 'border-gray-200 hover:border-chick-golden hover:bg-chick-cream'
                           }`}
                         >
                           <input
-                            type="radio"
-                            name="variation"
-                            checked={selectedVariation?.id === variation.id}
-                            onChange={() => setSelectedVariation(variation)}
-                            className="w-4 h-4 text-chick-orange focus:ring-chick-golden flex-shrink-0"
+                            type={maxFlavors > 1 ? "checkbox" : "radio"}
+                            name={maxFlavors > 1 ? undefined : "variation"}
+                            checked={!!isSelected}
+                            onChange={() => {
+                              if (maxFlavors > 1) {
+                                toggleVariationSelection(variation);
+                              } else {
+                                setSelectedVariation(variation);
+                              }
+                            }}
+                            className="w-4 h-4 text-chick-orange focus:ring-chick-golden flex-shrink-0 rounded"
                           />
                           <div className="flex-1 flex items-center justify-between">
-                            <span className="font-medium text-gray-900">
+                            <span className="font-medium text-gray-900 text-sm">
                               {variation.name}
                             </span>
                             {variation.price > 0 && (
-                              <span className="text-chick-orange font-semibold ml-2">
+                              <span className="text-chick-orange font-semibold ml-2 text-sm">
                                 +₱{variation.price.toFixed(2)}
                               </span>
                             )}
@@ -292,6 +354,14 @@ const MenuItemCard: React.FC<MenuItemCardProps> = React.memo(({
                       );
                     })}
                   </div>
+                  
+                  {maxFlavors > 1 && selectedVariations.length > 0 && (
+                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-sm text-blue-800 font-medium">
+                        ✨ Selected: {selectedVariations.map(v => v.name).join(', ')}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -373,11 +443,27 @@ const MenuItemCard: React.FC<MenuItemCardProps> = React.memo(({
 
               <button
                 onClick={handleCustomizedAddToCart}
-                className="w-full bg-chick-gradient text-white py-4 rounded-xl hover:shadow-2xl transition-all duration-200 font-bold flex items-center justify-center space-x-2 shadow-lg transform hover:scale-105"
+                disabled={maxFlavors > 1 && selectedVariations.length !== maxFlavors}
+                className={`w-full py-4 rounded-xl transition-all duration-200 font-bold flex items-center justify-center space-x-2 shadow-lg ${
+                  maxFlavors > 1 && selectedVariations.length !== maxFlavors
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-chick-gradient text-white hover:shadow-2xl transform hover:scale-105'
+                }`}
               >
                 <ShoppingCart className="h-5 w-5" />
-                <span>Add to Cart - ₱{calculatePrice().toFixed(2)}</span>
+                <span>
+                  {maxFlavors > 1 && selectedVariations.length !== maxFlavors
+                    ? `Please select ${maxFlavors} flavors`
+                    : `Add to Cart - ₱${calculatePrice().toFixed(2)}`
+                  }
+                </span>
               </button>
+              
+              {maxFlavors > 1 && selectedVariations.length !== maxFlavors && (
+                <p className="text-center text-sm text-gray-600 mt-2">
+                  You've selected {selectedVariations.length} of {maxFlavors} required flavors
+                </p>
+              )}
             </div>
           </div>
         </div>

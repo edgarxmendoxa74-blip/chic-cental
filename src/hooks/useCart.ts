@@ -18,7 +18,7 @@ export const useCart = () => {
     return price;
   };
 
-  const addToCart = useCallback((item: MenuItem, quantity: number = 1, variation?: Variation, addOns?: AddOn[]) => {
+  const addToCart = useCallback((item: MenuItem, quantity: number = 1, variation?: Variation, addOns?: AddOn[], variations?: Variation[]) => {
     const totalPrice = calculateItemPrice(item, variation, addOns);
     
     // Group add-ons by name and sum their quantities
@@ -33,11 +33,19 @@ export const useCart = () => {
     }, [] as (AddOn & { quantity: number })[]);
     
     setCartItems(prev => {
-      const existingItem = prev.find(cartItem => 
-        cartItem.id === item.id && 
-        cartItem.selectedVariation?.id === variation?.id &&
-        JSON.stringify(cartItem.selectedAddOns?.map(a => `${a.id}-${a.quantity || 1}`).sort()) === JSON.stringify(groupedAddOns?.map(a => `${a.id}-${a.quantity}`).sort())
-      );
+      const variationsKey = variations && variations.length > 0 
+        ? variations.map(v => v.id).sort().join('-')
+        : (variation?.id || 'default');
+        
+      const existingItem = prev.find(cartItem => {
+        const cartVariationsKey = cartItem.selectedVariations && cartItem.selectedVariations.length > 0
+          ? cartItem.selectedVariations.map(v => v.id).sort().join('-')
+          : (cartItem.selectedVariation?.id || 'default');
+          
+        return cartItem.id === item.id && 
+          cartVariationsKey === variationsKey &&
+          JSON.stringify(cartItem.selectedAddOns?.map(a => `${a.id}-${a.quantity || 1}`).sort()) === JSON.stringify(groupedAddOns?.map(a => `${a.id}-${a.quantity}`).sort());
+      });
       
       if (existingItem) {
         return prev.map(cartItem =>
@@ -46,12 +54,13 @@ export const useCart = () => {
             : cartItem
         );
       } else {
-        const uniqueId = `${item.id}-${variation?.id || 'default'}-${addOns?.map(a => a.id).join(',') || 'none'}`;
+        const uniqueId = `${item.id}-${variationsKey}-${addOns?.map(a => a.id).join(',') || 'none'}`;
         return [...prev, { 
           ...item,
           id: uniqueId,
           quantity,
           selectedVariation: variation,
+          selectedVariations: variations,
           selectedAddOns: groupedAddOns || [],
           totalPrice
         }];

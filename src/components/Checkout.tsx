@@ -51,7 +51,9 @@ ${serviceType === 'dine-in' ? `Party Size: ${partySize} person${partySize !== 1 
 ORDER DETAILS:
 ${cartItems.map(item => {
   let itemDetails = `- ${item.name}`;
-  if (item.selectedVariation) {
+  if (item.selectedVariations && item.selectedVariations.length > 0) {
+    itemDetails += ` (${item.selectedVariations.map(v => v.name).join(' + ')})`;
+  } else if (item.selectedVariation) {
     itemDetails += ` (${item.selectedVariation.name})`;
   }
   if (item.selectedAddOns && item.selectedAddOns.length > 0) {
@@ -119,9 +121,11 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
                 <div key={item.id} className="flex items-center justify-between py-2 border-b border-chick-beige">
                   <div>
                     <h4 className="font-medium text-black">{item.name}</h4>
-                    {item.selectedVariation && (
+                    {item.selectedVariations && item.selectedVariations.length > 0 ? (
+                      <p className="text-sm text-gray-600">Flavors: {item.selectedVariations.map(v => v.name).join(' + ')}</p>
+                    ) : item.selectedVariation ? (
                       <p className="text-sm text-gray-600">Flavor: {item.selectedVariation.name}</p>
-                    )}
+                    ) : null}
                     {item.selectedAddOns && item.selectedAddOns.length > 0 && (
                       <p className="text-sm text-gray-600">
                         Add-ons: {item.selectedAddOns.map(addOn => addOn.name).join(', ')}
@@ -457,9 +461,11 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
                   
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-black">{item.name}</h4>
-                    {item.selectedVariation && (
+                    {item.selectedVariations && item.selectedVariations.length > 0 ? (
+                      <p className="text-sm text-gray-600">Flavors: {item.selectedVariations.map(v => v.name).join(' + ')}</p>
+                    ) : item.selectedVariation ? (
                       <p className="text-sm text-gray-600">Flavor: {item.selectedVariation.name}</p>
-                    )}
+                    ) : null}
                     {item.selectedAddOns && item.selectedAddOns.length > 0 && (
                       <p className="text-sm text-gray-600">
                         Add-ons: {item.selectedAddOns.map(addOn => 

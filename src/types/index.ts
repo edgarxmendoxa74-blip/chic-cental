@@ -32,11 +32,14 @@ export interface MenuItem {
   // Computed effective price (calculated in the app)
   effectivePrice?: number;
   isOnDiscount?: boolean;
+  // Multi-flavor support
+  maxFlavors?: number; // How many flavors customer can pick (parsed from description)
 }
 
 export interface CartItem extends MenuItem {
   quantity: number;
   selectedVariation?: Variation;
+  selectedVariations?: Variation[]; // Support multiple flavors
   selectedAddOns?: AddOn[];
   totalPrice: number;
 }
