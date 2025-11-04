@@ -138,7 +138,7 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
   };
 
   const isDetailsValid = customerName && contactNumber && 
-    (serviceType !== 'delivery' || address) && 
+    (serviceType !== 'delivery' || (address && (deliveryMethod === 'standard' || !loadingQuote))) && 
     (serviceType !== 'pickup' || (pickupTime !== 'custom' || customTime)) &&
     (serviceType !== 'dine-in' || partySize > 0);
 
