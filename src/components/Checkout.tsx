@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Clock } from 'lucide-react';
+import { ArrowLeft, Clock, Bike } from 'lucide-react';
 import { CartItem, ServiceType } from '../types';
+import { LALAMOVE_SERVICE_TYPES } from '../config/lalamove';
+import { lalamoveService } from '../services/lalamove';
 
 interface CheckoutProps {
   cartItems: CartItem[];
@@ -20,10 +22,47 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   // Dine-in specific state
   const [partySize, setPartySize] = useState(1);
   const [notes, setNotes] = useState('');
+  // Lalamove delivery state
+  const [deliveryMethod, setDeliveryMethod] = useState<'standard' | 'lalamove'>('standard');
+  const [lalamoveServiceType, setLalamoveServiceType] = useState('MOTORCYCLE');
+  const [lalamoveQuote, setLalamoveQuote] = useState<any>(null);
+  const [loadingQuote, setLoadingQuote] = useState(false);
 
   React.useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step]);
+
+  // Get Lalamove quotation when address changes
+  React.useEffect(() => {
+    const getLalamoveQuotation = async () => {
+      if (serviceType === 'delivery' && deliveryMethod === 'lalamove' && address) {
+        setLoadingQuote(true);
+        try {
+          const quote = await lalamoveService.getQuotation({
+            serviceType: lalamoveServiceType,
+            stops: [
+              {
+                coordinates: { lat: '14.5547', lng: '121.0244' }, // Restaurant location
+                address: 'Chick Central, Taguig, Manila',
+              },
+              {
+                coordinates: { lat: '14.5500', lng: '121.0300' }, // Approximate customer location
+                address: address,
+              },
+            ],
+          });
+          setLalamoveQuote(quote);
+        } catch (error) {
+          console.error('Error getting Lalamove quote:', error);
+        } finally {
+          setLoadingQuote(false);
+        }
+      }
+    };
+
+    const timeoutId = setTimeout(getLalamoveQuotation, 500); // Debounce
+    return () => clearTimeout(timeoutId);
+  }, [address, deliveryMethod, lalamoveServiceType, serviceType]);
 
   const handleProceedToPayment = () => {
     setStep('payment');
@@ -38,13 +77,19 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
       ? `👥 Party Size: ${partySize} person${partySize !== 1 ? 's' : ''}`
       : '';
     
+    const deliveryInfo = serviceType === 'delivery' && deliveryMethod === 'lalamove'
+      ? `\nDelivery Method: Lalamove (${LALAMOVE_SERVICE_TYPES[lalamoveServiceType as keyof typeof LALAMOVE_SERVICE_TYPES]?.name})\nEstimated Delivery Fee: ₱${lalamoveQuote?.priceBreakdown.total || 'TBD'}\nETA: ${lalamoveQuote?.deliveryTime || 'TBD'}`
+      : serviceType === 'delivery'
+      ? `\nDelivery Method: Standard`
+      : '';
+    
     const orderDetails = `
 CHICK CENTRAL ORDER
 
 Customer: ${customerName}
 Contact: ${contactNumber}
 Service: ${serviceType.charAt(0).toUpperCase() + serviceType.slice(1)}
-${serviceType === 'delivery' ? `Address: ${address}${landmark ? `\nLandmark: ${landmark}` : ''}` : ''}
+${serviceType === 'delivery' ? `Address: ${address}${landmark ? `\nLandmark: ${landmark}` : ''}${deliveryInfo}` : ''}
 ${serviceType === 'pickup' ? `Pickup Time: ${timeInfo}` : ''}
 ${serviceType === 'dine-in' ? `Party Size: ${partySize} person${partySize !== 1 ? 's' : ''}` : ''}
 
@@ -294,6 +339,106 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
                       placeholder="e.g., Near McDonald's, Beside 7-Eleven, In front of school"
                     />
                   </div>
+
+                  {/* Delivery Method Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-black mb-3">Delivery Method *</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryMethod('standard')}
+                        className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                          deliveryMethod === 'standard'
+                            ? 'border-chick-orange bg-chick-beige'
+                            : 'border-gray-300 hover:border-chick-golden'
+                        }`}
+                      >
+                        <div className="text-2xl mb-2">🛵</div>
+                        <div className="font-semibold text-sm">Standard Delivery</div>
+                        <div className="text-xs text-gray-600 mt-1">Own delivery rider</div>
+                      </button>
+                      
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryMethod('lalamove')}
+                        className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                          deliveryMethod === 'lalamove'
+                            ? 'border-chick-orange bg-chick-beige'
+                            : 'border-gray-300 hover:border-chick-golden'
+                        }`}
+                      >
+                        <div className="flex items-center justify-center mb-2">
+                          <Bike className="h-6 w-6 text-orange-500" />
+                        </div>
+                        <div className="font-semibold text-sm">Lalamove</div>
+                        <div className="text-xs text-gray-600 mt-1">Fast & tracked</div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Lalamove Service Type Selection */}
+                  {deliveryMethod === 'lalamove' && (
+                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                      <label className="block text-sm font-medium text-black mb-3">
+                        <Bike className="inline h-4 w-4 mr-1" />
+                        Choose Vehicle Type
+                      </label>
+                      <div className="space-y-2">
+                        {Object.values(LALAMOVE_SERVICE_TYPES).map((service) => (
+                          <label
+                            key={service.id}
+                            className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                              lalamoveServiceType === service.id
+                                ? 'border-orange-500 bg-white'
+                                : 'border-gray-300 bg-white hover:border-orange-300'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="lalamoveService"
+                              checked={lalamoveServiceType === service.id}
+                              onChange={() => setLalamoveServiceType(service.id)}
+                              className="mr-3"
+                            />
+                            <div className="text-2xl mr-3">{service.icon}</div>
+                            <div className="flex-1">
+                              <div className="font-semibold text-sm">{service.name}</div>
+                              <div className="text-xs text-gray-600">{service.description}</div>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+
+                      {/* Lalamove Quote */}
+                      {address && (
+                        <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
+                          {loadingQuote ? (
+                            <div className="text-center text-sm text-gray-600">
+                              <div className="animate-spin inline-block w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full mr-2"></div>
+                              Calculating delivery fee...
+                            </div>
+                          ) : lalamoveQuote ? (
+                            <div className="text-sm">
+                              <div className="flex justify-between items-center mb-2">
+                                <span className="text-gray-600">Estimated Delivery Fee:</span>
+                                <span className="font-bold text-orange-600 text-lg">
+                                  ₱{parseFloat(lalamoveQuote.priceBreakdown.total).toFixed(2)}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center text-xs text-gray-500">
+                                <span>Distance: {lalamoveQuote.distance.value} km</span>
+                                <span>ETA: {lalamoveQuote.deliveryTime}</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-xs text-gray-500">
+                              Enter delivery address to see quote
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
 
@@ -431,6 +576,16 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
                 <>
                   <p className="text-sm text-gray-600">Address: {address}</p>
                   {landmark && <p className="text-sm text-gray-600">Landmark: {landmark}</p>}
+                  <p className="text-sm text-gray-600">
+                    Delivery: {deliveryMethod === 'lalamove' 
+                      ? `Lalamove (${LALAMOVE_SERVICE_TYPES[lalamoveServiceType as keyof typeof LALAMOVE_SERVICE_TYPES]?.name})` 
+                      : 'Standard'}
+                  </p>
+                  {deliveryMethod === 'lalamove' && lalamoveQuote && (
+                    <p className="text-sm text-gray-600">
+                      Delivery Fee: ₱{parseFloat(lalamoveQuote.priceBreakdown.total).toFixed(2)}
+                    </p>
+                  )}
                 </>
               )}
               {serviceType === 'pickup' && (
