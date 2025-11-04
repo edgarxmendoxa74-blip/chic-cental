@@ -43,3 +43,24 @@ export const LALAMOVE_CONFIG = {
   region: 'PH_MNL', // Manila, Philippines
 };
 
+// Get Lalamove configuration with proper API URL
+export function getLalamoveConfig() {
+  const useSandbox = import.meta.env.VITE_LALAMOVE_USE_SANDBOX === 'true';
+  const apiKey = useSandbox 
+    ? import.meta.env.VITE_LALAMOVE_API_KEY 
+    : import.meta.env.VITE_LALAMOVE_PROD_API_KEY;
+  const apiSecret = useSandbox
+    ? import.meta.env.VITE_LALAMOVE_API_SECRET
+    : import.meta.env.VITE_LALAMOVE_PROD_API_SECRET;
+
+  return {
+    apiKey,
+    apiSecret,
+    apiUrl: useSandbox 
+      ? 'https://rest.sandbox.lalamove.com' 
+      : 'https://rest.lalamove.com',
+    region: 'PH_MNL',
+    useSandbox,
+  };
+}
+
