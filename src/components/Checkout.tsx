@@ -120,6 +120,14 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   };
 
   const handlePlaceOrder = () => {
+    // If Lalamove delivery, open tracking link directly
+    if (serviceType === 'delivery' && deliveryMethod === 'lalamove' && lalamoveOrder?.trackingUrl) {
+      // Open Lalamove tracking in the current tab
+      window.location.href = lalamoveOrder.trackingUrl;
+      return;
+    }
+
+    // For non-Lalamove orders, proceed with Messenger
     const timeInfo = serviceType === 'pickup' 
       ? (pickupTime === 'custom' ? customTime : `${pickupTime} minutes`)
       : '';
@@ -724,11 +732,15 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
             onClick={handlePlaceOrder}
             className="w-full py-4 rounded-xl font-medium text-lg transition-all duration-200 transform bg-chick-gradient text-white hover:shadow-2xl hover:scale-[1.02]"
           >
-            Place Order via Messenger
+            {serviceType === 'delivery' && deliveryMethod === 'lalamove' && lalamoveOrder
+              ? '🚚 Track Your Lalamove Delivery'
+              : 'Place Order via Messenger'}
           </button>
           
           <p className="text-xs text-gray-500 text-center mt-3">
-            You'll be redirected to Facebook Messenger to confirm your order. Don't forget to attach your payment screenshot!
+            {serviceType === 'delivery' && deliveryMethod === 'lalamove' && lalamoveOrder
+              ? 'Click to open Lalamove tracking and monitor your delivery in real-time!'
+              : "You'll be redirected to Facebook Messenger to confirm your order. Don't forget to attach your payment screenshot!"}
           </p>
         </div>
       </div>
