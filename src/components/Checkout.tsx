@@ -27,6 +27,8 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   const [lalamoveServiceType, setLalamoveServiceType] = useState('MOTORCYCLE');
   const [lalamoveQuote, setLalamoveQuote] = useState<any>(null);
   const [loadingQuote, setLoadingQuote] = useState(false);
+  const [lalamoveOrder, setLalamoveOrder] = useState<any>(null);
+  const [creatingOrder, setCreatingOrder] = useState(false);
 
   React.useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -64,7 +66,56 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
     return () => clearTimeout(timeoutId);
   }, [address, deliveryMethod, lalamoveServiceType, serviceType]);
 
-  const handleProceedToPayment = () => {
+  const handleProceedToPayment = async () => {
+    // If Lalamove delivery, create the order first
+    if (serviceType === 'delivery' && deliveryMethod === 'lalamove') {
+      setCreatingOrder(true);
+      try {
+        const order = await lalamoveService.placeOrder({
+          serviceType: lalamoveServiceType,
+          stops: [
+            {
+              coordinates: { lat: '14.5547', lng: '121.0244' }, // Restaurant location
+              address: 'Chick Central, Taguig, Manila',
+            },
+            {
+              coordinates: { lat: '14.5500', lng: '121.0300' }, // Customer location (approximate)
+              address: address,
+            },
+          ],
+          sender: {
+            name: 'Chick Central',
+            phone: '+639052931408',
+          },
+          recipients: [
+            {
+              name: customerName,
+              phone: contactNumber,
+              remarks: landmark || notes || 'Please call upon arrival',
+            },
+          ],
+          deliveries: [
+            {
+              remarks: `Order Total: ₱${totalPrice}`,
+            },
+          ],
+        });
+
+        if (order) {
+          setLalamoveOrder(order);
+          // Open Lalamove tracking URL
+          if (order.trackingUrl) {
+            window.open(order.trackingUrl, '_blank');
+          }
+        }
+      } catch (error) {
+        console.error('Error creating Lalamove order:', error);
+        alert('Failed to create Lalamove delivery order. Please try again.');
+      } finally {
+        setCreatingOrder(false);
+      }
+    }
+    
     setStep('payment');
   };
 
@@ -78,7 +129,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
       : '';
     
     const deliveryInfo = serviceType === 'delivery' && deliveryMethod === 'lalamove'
-      ? `\nDelivery Method: Lalamove (${LALAMOVE_SERVICE_TYPES[lalamoveServiceType as keyof typeof LALAMOVE_SERVICE_TYPES]?.name})\nEstimated Delivery Fee: ₱${lalamoveQuote?.priceBreakdown.total || 'TBD'}\nETA: ${lalamoveQuote?.deliveryTime || 'TBD'}`
+      ? `\nDelivery Method: Lalamove (${LALAMOVE_SERVICE_TYPES[lalamoveServiceType as keyof typeof LALAMOVE_SERVICE_TYPES]?.name})\nEstimated Delivery Fee: ₱${lalamoveQuote?.priceBreakdown.total || 'TBD'}\nETA: ${lalamoveQuote?.deliveryTime || 'TBD'}${lalamoveOrder ? `\nLalamove Order ID: ${lalamoveOrder.orderId}\nTracking: ${lalamoveOrder.trackingUrl}` : ''}`
       : serviceType === 'delivery'
       ? `\nDelivery Method: Standard`
       : '';
@@ -140,7 +191,8 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
   const isDetailsValid = customerName && contactNumber && 
     (serviceType !== 'delivery' || (address && (deliveryMethod === 'standard' || !loadingQuote))) && 
     (serviceType !== 'pickup' || (pickupTime !== 'custom' || customTime)) &&
-    (serviceType !== 'dine-in' || partySize > 0);
+    (serviceType !== 'dine-in' || partySize > 0) &&
+    !creatingOrder;
 
   if (step === 'details') {
     return (
@@ -463,7 +515,14 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
-                Proceed to Payment
+                {creatingOrder ? (
+                  <span className="flex items-center justify-center">
+                    <div className="animate-spin inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                    Creating Lalamove Order...
+                  </span>
+                ) : (
+                  'Proceed to Payment'
+                )}
               </button>
             </form>
           </div>
@@ -585,6 +644,22 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
                     <p className="text-sm text-gray-600">
                       Delivery Fee: ₱{parseFloat(lalamoveQuote.priceBreakdown.total).toFixed(2)}
                     </p>
+                  )}
+                  {deliveryMethod === 'lalamove' && lalamoveOrder && (
+                    <div className="mt-3 pt-3 border-t border-orange-200">
+                      <p className="text-sm font-semibold text-orange-600 mb-2">🚚 Lalamove Order Created!</p>
+                      <p className="text-sm text-gray-600">Order ID: {lalamoveOrder.orderId}</p>
+                      {lalamoveOrder.trackingUrl && (
+                        <a 
+                          href={lalamoveOrder.trackingUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-block mt-2 text-sm text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-lg transition-colors"
+                        >
+                          Track Delivery 🔗
+                        </a>
+                      )}
+                    </div>
                   )}
                 </>
               )}
