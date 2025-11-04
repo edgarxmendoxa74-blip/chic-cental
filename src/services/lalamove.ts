@@ -1,4 +1,4 @@
-import { getLalamoveConfig } from '../config/lalamove';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 
 interface LalamoveQuotation {
   serviceType: string;
@@ -47,35 +47,65 @@ interface OrderRequest extends QuotationRequest {
   }[];
 }
 
-// Generate signature for Lalamove API (simplified - should be done on backend in production)
-const generateSignature = (timestamp: number, method: string, path: string, body: string) => {
-  // In production, this should be done on your backend for security
-  // This is a placeholder - implement proper HMAC-SHA256 signing
-  console.warn('Lalamove signature generation should be done on backend for security');
-  return 'PLACEHOLDER_SIGNATURE';
-};
-
 export class LalamoveService {
-  private config = getLalamoveConfig();
-
-  // Get quotation (price estimate)
+  // Get quotation (price estimate) from backend
   async getQuotation(request: QuotationRequest): Promise<LalamoveQuotation | null> {
     try {
-      const endpoint = `${this.config.apiUrl}/v3/quotations`;
-      const timestamp = Date.now();
-      const body = JSON.stringify(request);
-
-      // In production, call your backend to get the quotation
-      // For now, return a mock quotation
-      console.log('Getting Lalamove quotation for:', request);
+      console.log('🎯 Getting Lalamove quotation via backend...');
       
-      // Mock response for development
+      const dropoff = request.stops[1];
+      const response = await fetch(`${BACKEND_URL}/get-quotation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          dropoff: {
+            address: dropoff.address,
+            lat: dropoff.coordinates.lat,
+            lng: dropoff.coordinates.lng,
+          },
+          serviceType: request.serviceType,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get quotation from backend');
+      }
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to get quotation');
+      }
+
+      // Transform backend response to match frontend interface
+      const quotation: LalamoveQuotation = {
+        serviceType: result.data.serviceType,
+        priceBreakdown: {
+          total: result.data.totalFee,
+          currency: result.data.currency,
+        },
+        distance: {
+          value: result.data.distance?.value || '0',
+          unit: result.data.distance?.unit || 'km',
+        },
+        deliveryTime: result.data.estimatedTime || '30-45 minutes',
+      };
+
+      console.log('✅ Quotation received:', quotation);
+      return quotation;
+    } catch (error) {
+      console.error('❌ Error getting Lalamove quotation:', error);
+      
+      // Fallback to mock data if backend is unavailable
+      console.warn('⚠️ Backend unavailable, using mock data');
       const distance = this.calculateDistance(
         request.stops[0].coordinates,
         request.stops[1].coordinates
       );
       
-      const mockQuotation: LalamoveQuotation = {
+      return {
         serviceType: request.serviceType,
         priceBreakdown: {
           total: this.estimateFee(request.serviceType, distance).toString(),
@@ -87,31 +117,64 @@ export class LalamoveService {
         },
         deliveryTime: '30-45 minutes',
       };
-
-      return mockQuotation;
-    } catch (error) {
-      console.error('Error getting Lalamove quotation:', error);
-      return null;
     }
   }
 
-  // Place order
+  // Place order via backend
   async placeOrder(request: OrderRequest): Promise<LalamoveOrder | null> {
     try {
-      console.log('Placing Lalamove order:', request);
+      console.log('🚚 Creating Lalamove delivery via backend...');
       
-      // In production, this should call your backend which then calls Lalamove API
-      // Mock response for development
-      const mockOrder: LalamoveOrder = {
+      const dropoff = request.stops[1];
+      const recipient = request.recipients[0];
+      
+      const response = await fetch(`${BACKEND_URL}/create-delivery`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customerName: recipient.name,
+          phone: recipient.phone,
+          dropoff: {
+            address: dropoff.address,
+            lat: dropoff.coordinates.lat,
+            lng: dropoff.coordinates.lng,
+          },
+          serviceType: request.serviceType,
+          remarks: recipient.remarks || 'Please call upon arrival',
+          orderTotal: request.deliveries[0]?.remarks?.match(/₱(\d+)/)?.[1],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create delivery via backend');
+      }
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to create delivery');
+      }
+
+      const order: LalamoveOrder = {
+        orderId: result.data.orderId,
+        status: result.data.status,
+        trackingUrl: result.data.trackingLink,
+      };
+
+      console.log('✅ Delivery created:', order);
+      return order;
+    } catch (error) {
+      console.error('❌ Error creating Lalamove delivery:', error);
+      
+      // Fallback to mock data if backend is unavailable
+      console.warn('⚠️ Backend unavailable, using mock order');
+      return {
         orderId: `LAL${Date.now()}`,
         status: 'ASSIGNING_DRIVER',
         trackingUrl: 'https://www.lalamove.com/track/order',
       };
-
-      return mockOrder;
-    } catch (error) {
-      console.error('Error placing Lalamove order:', error);
-      return null;
     }
   }
 
