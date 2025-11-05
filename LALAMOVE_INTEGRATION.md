@@ -9,10 +9,8 @@ Your Chick Central app now supports **Lalamove** delivery integration! Customers
 - Standard Delivery (own riders)
 - Lalamove Delivery (tracked, professional)
 
-✅ **Multiple Vehicle Types**
-- 🏍️ Motorcycle - Fast for small orders
-- 🚗 Sedan - Comfortable for larger orders
-- 🚐 Van - For bulk orders
+✅ **Vehicle Type**
+- 🏍️ Motorcycle - Fast delivery for small orders
 
 ✅ **Real-time Quotations**
 - Automatic delivery fee calculation
@@ -114,14 +112,6 @@ When customer selects Lalamove:
 **Motorcycle 🏍️**
 - Base: ₱50
 - Per km: ₱10
-
-**Sedan 🚗**
-- Base: ₱80
-- Per km: ₱15
-
-**Van 🚐**
-- Base: ₱120
-- Per km: ₱20
 
 *Actual rates may vary based on Lalamove's current pricing*
 

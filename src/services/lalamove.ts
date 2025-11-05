@@ -211,14 +211,10 @@ export class LalamoveService {
   private estimateFee(serviceType: string, distance: number): number {
     const baseRates: Record<string, number> = {
       MOTORCYCLE: 50,
-      SEDAN: 80,
-      VAN: 120,
     };
 
     const perKmRate: Record<string, number> = {
       MOTORCYCLE: 10,
-      SEDAN: 15,
-      VAN: 20,
     };
 
     const base = baseRates[serviceType] || 50;

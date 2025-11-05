@@ -103,9 +103,18 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
 
         if (order) {
           setLalamoveOrder(order);
-          // Open Lalamove tracking URL
-          if (order.trackingUrl) {
+          
+          // Check if sandbox mode (test credentials)
+          const isSandbox = import.meta.env.VITE_LALAMOVE_USE_SANDBOX === 'true';
+          
+          if (order.trackingUrl && !isSandbox) {
+            // Production: Open real tracking URL
             window.open(order.trackingUrl, '_blank');
+          } else if (isSandbox) {
+            // Sandbox: Show info message
+            console.log('📦 Sandbox Mode: Order created successfully!');
+            console.log('Order ID:', order.orderId);
+            console.log('Note: Tracking links work only in production mode');
           }
         }
       } catch (error) {
@@ -122,9 +131,17 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   const handlePlaceOrder = () => {
     // If Lalamove delivery, open tracking link directly
     if (serviceType === 'delivery' && deliveryMethod === 'lalamove' && lalamoveOrder?.trackingUrl) {
-      // Open Lalamove tracking in the current tab
-      window.location.href = lalamoveOrder.trackingUrl;
-      return;
+      const isSandbox = import.meta.env.VITE_LALAMOVE_USE_SANDBOX === 'true';
+      
+      if (isSandbox) {
+        // Sandbox mode: Show alert and send via Messenger
+        alert(`✅ Lalamove Order Created!\n\nOrder ID: ${lalamoveOrder.orderId}\n\nNote: You're in TEST mode. Tracking links work only with production credentials.\n\nProceeding to send order details via Messenger...`);
+        // Continue to Messenger flow below
+      } else {
+        // Production: Open Lalamove tracking in the current tab
+        window.location.href = lalamoveOrder.trackingUrl;
+        return;
+      }
     }
 
     // For non-Lalamove orders, proceed with Messenger
@@ -655,17 +672,25 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
                   )}
                   {deliveryMethod === 'lalamove' && lalamoveOrder && (
                     <div className="mt-3 pt-3 border-t border-orange-200">
-                      <p className="text-sm font-semibold text-orange-600 mb-2">🚚 Lalamove Order Created!</p>
+                      <p className="text-sm font-semibold text-orange-600 mb-2">
+                        {import.meta.env.VITE_LALAMOVE_USE_SANDBOX === 'true' ? '📦 Test Order Created!' : '🚚 Lalamove Order Created!'}
+                      </p>
                       <p className="text-sm text-gray-600">Order ID: {lalamoveOrder.orderId}</p>
-                      {lalamoveOrder.trackingUrl && (
-                        <a 
-                          href={lalamoveOrder.trackingUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="inline-block mt-2 text-sm text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-lg transition-colors"
-                        >
-                          Track Delivery 🔗
-                        </a>
+                      {import.meta.env.VITE_LALAMOVE_USE_SANDBOX === 'true' ? (
+                        <p className="text-xs text-amber-600 mt-2 bg-amber-50 p-2 rounded">
+                          ⚠️ Test Mode: Switch to production credentials for real tracking
+                        </p>
+                      ) : (
+                        lalamoveOrder.trackingUrl && (
+                          <a 
+                            href={lalamoveOrder.trackingUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-block mt-2 text-sm text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-lg transition-colors"
+                          >
+                            Track Delivery 🔗
+                          </a>
+                        )
                       )}
                     </div>
                   )}
@@ -733,13 +758,17 @@ Please confirm this order to proceed. Thank you for choosing Chick Central!
             className="w-full py-4 rounded-xl font-medium text-lg transition-all duration-200 transform bg-chick-gradient text-white hover:shadow-2xl hover:scale-[1.02]"
           >
             {serviceType === 'delivery' && deliveryMethod === 'lalamove' && lalamoveOrder
-              ? '🚚 Track Your Lalamove Delivery'
+              ? (import.meta.env.VITE_LALAMOVE_USE_SANDBOX === 'true' 
+                  ? '📦 View Order Details (Test Mode)' 
+                  : '🚚 Track Your Lalamove Delivery')
               : 'Place Order via Messenger'}
           </button>
           
           <p className="text-xs text-gray-500 text-center mt-3">
             {serviceType === 'delivery' && deliveryMethod === 'lalamove' && lalamoveOrder
-              ? 'Click to open Lalamove tracking and monitor your delivery in real-time!'
+              ? (import.meta.env.VITE_LALAMOVE_USE_SANDBOX === 'true'
+                  ? '⚠️ Test Mode: Tracking links work only with production credentials. Order details will be sent via Messenger.'
+                  : 'Click to open Lalamove tracking and monitor your delivery in real-time!')
               : "You'll be redirected to Facebook Messenger to confirm your order. Don't forget to attach your payment screenshot!"}
           </p>
         </div>

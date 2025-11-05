@@ -12,8 +12,14 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
   const { siteSettings, loading } = useSiteSettings();
 
   return (
-    <header className="sticky top-0 z-50 bg-chick-gradient backdrop-blur-md border-b border-chick-golden shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      {/* Loading Notice - Above Header */}
+      <div className="bg-yellow-400 text-black text-center py-3 px-4 font-semibold text-base shadow-md">
+        ⏳ Kindly wait 40 seconds to show the menu
+      </div>
+      
+      <header className="sticky top-0 z-50 bg-chick-gradient backdrop-blur-md border-b border-chick-golden shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <button 
             onClick={onMenuClick}
@@ -57,6 +63,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
         </div>
       </div>
     </header>
+    </>
   );
 };
 

@@ -8,18 +8,6 @@ export const LALAMOVE_SERVICE_TYPES = {
     description: 'Fast delivery for small orders',
     icon: '🏍️',
   },
-  SEDAN: {
-    id: 'SEDAN',
-    name: 'Sedan',
-    description: 'Comfortable delivery for regular orders',
-    icon: '🚗',
-  },
-  VAN: {
-    id: 'VAN',
-    name: 'Van',
-    description: 'Large capacity for bulk orders',
-    icon: '🚐',
-  },
 };
 
 // Default pickup location (your restaurant)
